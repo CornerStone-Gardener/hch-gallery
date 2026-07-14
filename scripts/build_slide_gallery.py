@@ -334,14 +334,17 @@ TEMPLATE = """<!doctype html>
 :root[data-theme="light"] {{ --bg:#eef0ea; --bg-raised:#ffffff; --ink:#17191c; --ink-soft:#52584f; --line:#d6d9cf; --accent:#2a5c74; --accent-ink:#ffffff; --chip-bg:#e2e6da; --chip-active-bg:#2a5c74; --chip-active-ink:#ffffff; }}
 * {{ box-sizing: border-box; }}
 body {{ margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); line-height: 1.5; }}
-header {{ position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); padding: 1.5rem clamp(1rem, 4vw, 3rem) 1rem; }}
-h1 {{ font-family: var(--serif); font-weight: 400; font-size: clamp(1.6rem, 3vw, 2.2rem); margin: 0 0 0.25rem; text-wrap: balance; }}
-.subtitle {{ color: var(--ink-soft); margin: 0 0 1rem; max-width: 62ch; }}
-.filters {{ display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }}
-.chip {{ font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.02em; padding: 0.35rem 0.7rem; border-radius: 999px; background: var(--chip-bg); color: var(--ink-soft); border: 1px solid transparent; cursor: pointer; user-select: none; }}
+header {{ position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); padding: 0.9rem clamp(1rem, 4vw, 3rem) 0.7rem; }}
+h1 {{ font-family: var(--serif); font-weight: 400; font-size: clamp(1.1rem, 2vw, 1.4rem); margin: 0; text-wrap: balance; display: inline; }}
+.subtitle {{ display: none; }}
+header.expanded .subtitle {{ display: block; color: var(--ink-soft); margin: 0.4rem 0 0.7rem; max-width: 62ch; font-size: 0.85rem; }}
+.title-row {{ display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }}
+.title-row button.toggle-info {{ font-family: var(--mono); font-size: 0.68rem; color: var(--accent); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 0.15rem 0.6rem; cursor: pointer; }}
+.filters {{ display: flex; flex-wrap: nowrap; gap: 0.4rem; align-items: center; overflow-x: auto; padding: 0.6rem 0 0.1rem; scrollbar-width: thin; }}
+.chip {{ flex: none; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.02em; padding: 0.3rem 0.65rem; border-radius: 999px; background: var(--chip-bg); color: var(--ink-soft); border: 1px solid transparent; cursor: pointer; user-select: none; white-space: nowrap; }}
 .chip[aria-pressed="true"] {{ background: var(--chip-active-bg); color: var(--chip-active-ink); }}
 .chip:focus-visible {{ outline: 2px solid var(--accent); outline-offset: 2px; }}
-.count {{ font-family: var(--mono); font-size: 0.75rem; color: var(--ink-soft); margin-left: auto; }}
+.count {{ font-family: var(--mono); font-size: 0.72rem; color: var(--ink-soft); flex: none; margin-left: 0.4rem; }}
 main {{ padding: 1.5rem clamp(1rem, 4vw, 3rem) 4rem; }}
 .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; }}
 .card {{ background: var(--bg-raised); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }}
@@ -399,8 +402,6 @@ button.copy:focus-visible {{ outline: 2px solid var(--ink); outline-offset: 2px;
 }}
 :root[data-theme="dark"] .license-mit {{ background: #16301f; color: #7fd99a; }}
 :root[data-theme="dark"] .license-internal {{ background: #3a2c12; color: #e0b567; }}
-.library-banner {{ display: flex; justify-content: space-between; align-items: center; gap: 1rem; background: var(--chip-bg); border-radius: 8px; padding: 0.6rem 0.9rem; margin-top: 0.9rem; font-size: 0.8rem; }}
-.library-banner a {{ color: var(--accent); font-weight: 600; text-decoration: none; }}
 footer {{ padding: 1rem clamp(1rem, 4vw, 3rem) 3rem; color: var(--ink-soft); font-size: 0.75rem; max-width: 70ch; }}
 @media (prefers-reduced-motion: no-preference) {{
   .card {{ transition: transform 0.15s ease, border-color 0.15s ease; }}
@@ -409,17 +410,16 @@ footer {{ padding: 1rem clamp(1rem, 4vw, 3rem) 3rem; color: var(--ink-soft); fon
 </style>
 </head>
 <body>
-<header>
-  <h1>HKTK Slide Prompt Gallery</h1>
-  <p class="subtitle">{count} slide styles rendered as real mockups — background, type, and mood as they'll actually look. {mit_count} are openly licensed (MIT) and safe to redistribute; {internal_count} are adapted from HKTK's internal 301-sample style library for personal use. Expand a card for the full prompt and copy it into Claude, Codex, or AGY.</p>
+<header id="site-header">
+  <div class="title-row">
+    <h1>HKTK Slide Prompt Gallery</h1>
+    <button class="toggle-info" id="toggleInfo" aria-expanded="false">about &amp; sources</button>
+  </div>
+  <p class="subtitle">{count} slide styles rendered as real mockups — background, type, and mood as they'll actually look. {mit_count} are openly licensed (MIT) and safe to redistribute; {internal_count} are adapted from HKTK's internal 301-sample style library for personal use. Expand a card for the full prompt and copy it into Claude, Codex, or AGY. Looking for more effects &amp; moods (glassmorphism, brutalism, ukiyo-e, 170+ more)? <a href="../../banana-prompts/site/index.html">Browse the full 301-sample style library &rarr;</a></p>
   <div class="filters" id="filters">
     <button class="chip" data-tag="all" aria-pressed="true">all</button>
     {chip_html}
     <span class="count" id="count"></span>
-  </div>
-  <div class="library-banner">
-    <span>Looking for more effects &amp; moods (glassmorphism, brutalism, ukiyo-e, 170+ more)?</span>
-    <a href="../../banana-prompts/site/index.html">Browse the full 301-sample style library &rarr;</a>
   </div>
 </header>
 <main>
@@ -461,6 +461,11 @@ grid.addEventListener('click', (e) => {{
   }});
 }});
 updateCount();
+document.getElementById('toggleInfo').addEventListener('click', () => {{
+  const header = document.getElementById('site-header');
+  const expanded = header.classList.toggle('expanded');
+  document.getElementById('toggleInfo').setAttribute('aria-expanded', expanded);
+}});
 </script>
 </body>
 </html>
