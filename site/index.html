@@ -1,0 +1,1410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>HKTK Slide Prompt Gallery</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+:root {
+  --bg: #eef0ea;
+  --bg-raised: #ffffff;
+  --ink: #17191c;
+  --ink-soft: #52584f;
+  --line: #d6d9cf;
+  --accent: #2a5c74;
+  --accent-ink: #ffffff;
+  --chip-bg: #e2e6da;
+  --chip-active-bg: #2a5c74;
+  --chip-active-ink: #ffffff;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#14161a; --bg-raised:#1c1f24; --ink:#eceee9; --ink-soft:#a7ada1; --line:#333730; --accent:#7fb8c9; --accent-ink:#0d1113; --chip-bg:#23261f; --chip-active-bg:#7fb8c9; --chip-active-ink:#0d1113; }
+}
+:root[data-theme="dark"] { --bg:#14161a; --bg-raised:#1c1f24; --ink:#eceee9; --ink-soft:#a7ada1; --line:#333730; --accent:#7fb8c9; --accent-ink:#0d1113; --chip-bg:#23261f; --chip-active-bg:#7fb8c9; --chip-active-ink:#0d1113; }
+:root[data-theme="light"] { --bg:#eef0ea; --bg-raised:#ffffff; --ink:#17191c; --ink-soft:#52584f; --line:#d6d9cf; --accent:#2a5c74; --accent-ink:#ffffff; --chip-bg:#e2e6da; --chip-active-bg:#2a5c74; --chip-active-ink:#ffffff; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); line-height: 1.5; }
+header { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); padding: 1.5rem clamp(1rem, 4vw, 3rem) 1rem; }
+h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(1.6rem, 3vw, 2.2rem); margin: 0 0 0.25rem; text-wrap: balance; }
+.subtitle { color: var(--ink-soft); margin: 0 0 1rem; max-width: 62ch; }
+.filters { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.chip { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.02em; padding: 0.35rem 0.7rem; border-radius: 999px; background: var(--chip-bg); color: var(--ink-soft); border: 1px solid transparent; cursor: pointer; user-select: none; }
+.chip[aria-pressed="true"] { background: var(--chip-active-bg); color: var(--chip-active-ink); }
+.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.count { font-family: var(--mono); font-size: 0.75rem; color: var(--ink-soft); margin-left: auto; }
+main { padding: 1.5rem clamp(1rem, 4vw, 3rem) 4rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; }
+.card { background: var(--bg-raised); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+
+/* --- slide mockup (16:9) --- */
+.slide { position: relative; aspect-ratio: 16/9; background: var(--s-bg); color: var(--s-ink); overflow: hidden; display: flex; }
+.s-photo { position: absolute; inset: 0; opacity: 0.9; }
+.s-content { position: relative; z-index: 1; padding: 7% 8%; display: flex; flex-direction: column; justify-content: center; gap: 0.4em; width: 100%; }
+.s-kicker { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.12em; color: var(--s-accent); text-transform: uppercase; }
+.s-kicker--mono { color: var(--s-accent); }
+.s-rule { width: 2.5rem; height: 2px; background: var(--s-accent); margin: 0.3em 0; }
+.s-headline { font-family: var(--s-font); font-weight: 700; font-size: clamp(1rem, 2.6vw, 1.5rem); line-height: 1.15; margin: 0; text-wrap: balance; max-width: 18ch; }
+.s-headline--editorial { font-weight: 400; font-style: italic; max-width: 20ch; }
+.s-headline--tech { font-family: var(--mono); font-weight: 600; }
+.s-headline--diagonal { font-weight: 800; text-transform: uppercase; letter-spacing: -0.01em; }
+.s-subhead { font-size: 0.72rem; color: var(--s-ink); opacity: 0.75; margin: 0; max-width: 26ch; }
+.s-subhead--mono { font-family: var(--mono); }
+.s-byline { font-family: var(--mono); font-size: 0.58rem; opacity: 0.6; margin-top: 0.6em; }
+.s-node { position: absolute; right: 8%; bottom: 10%; width: 10px; height: 10px; border-radius: 50%; background: var(--s-accent); box-shadow: 0 0 0 6px color-mix(in srgb, var(--s-accent) 25%, transparent); }
+.s-band { position: absolute; inset: -10% -20%; background: var(--s-accent); transform: skewY(-6deg); opacity: 0.14; }
+.s-tabs { position: absolute; top: 10%; right: 6%; display: flex; flex-direction: column; gap: 6px; }
+.s-tabs span { width: 22px; height: 8px; border-radius: 3px; background: var(--s-accent); opacity: 0.7; }
+.s-tabs span:nth-child(2) { background: var(--s-accent2); }
+.slide--photo { padding: 0; }
+.s-photo-real { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.s-scrim { position: absolute; inset: 0; }
+.s-content--photo { justify-content: flex-end; padding-bottom: 8%; }
+.badge-real { position: absolute; top: 3%; left: 3%; z-index: 2; font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; background: color-mix(in srgb, var(--s-bg) 55%, transparent); color: var(--s-ink); padding: 0.15rem 0.5rem; border-radius: 4px; }
+.slide--split { padding: 0; }
+.s-split-left { width: 42%; height: 100%; }
+.s-split-right { width: 58%; padding: 8% 7%; display: flex; flex-direction: column; justify-content: center; gap: 0.4em; }
+
+.card-body { padding: 0.85rem 1rem 1rem; display: flex; flex-direction: column; gap: 0.45rem; flex: 1; }
+.card h2 { font-family: var(--serif); font-weight: 400; font-size: 1.05rem; margin: 0; }
+.use-case { color: var(--ink-soft); font-size: 0.8rem; margin: 0; }
+.tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.tag { font-family: var(--mono); font-size: 0.65rem; color: var(--ink-soft); background: var(--chip-bg); padding: 0.15rem 0.45rem; border-radius: 4px; }
+.fonts { font-family: var(--mono); font-size: 0.68rem; color: var(--ink-soft); }
+.palette-row { display: flex; gap: 4px; }
+.palette-row span { width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--line); }
+details { margin-top: 0.3rem; border-top: 1px solid var(--line); padding-top: 0.45rem; }
+summary { cursor: pointer; font-size: 0.76rem; color: var(--accent); }
+pre { white-space: pre-wrap; font-family: var(--mono); font-size: 0.7rem; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 0.6rem; margin: 0.5rem 0 0; max-width: 100%; overflow-x: auto; }
+.card-actions { display: flex; gap: 0.5rem; margin-top: 0.3rem; }
+button.copy { font-family: var(--mono); font-size: 0.7rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; padding: 0.4rem 0.7rem; cursor: pointer; }
+button.copy:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.source { font-size: 0.66rem; color: var(--ink-soft); display: flex; gap: 0.4rem; align-items: center; }
+.source a { color: inherit; }
+.license-tag { font-family: var(--mono); font-size: 0.6rem; padding: 0.08rem 0.4rem; border-radius: 3px; }
+.license-mit { background: #dcefe0; color: #1c5c33; }
+.license-internal { background: #f3e0c8; color: #6b4a15; }
+@media (prefers-color-scheme: dark) {
+  .license-mit { background: #16301f; color: #7fd99a; }
+  .license-internal { background: #3a2c12; color: #e0b567; }
+}
+:root[data-theme="dark"] .license-mit { background: #16301f; color: #7fd99a; }
+:root[data-theme="dark"] .license-internal { background: #3a2c12; color: #e0b567; }
+.library-banner { display: flex; justify-content: space-between; align-items: center; gap: 1rem; background: var(--chip-bg); border-radius: 8px; padding: 0.6rem 0.9rem; margin-top: 0.9rem; font-size: 0.8rem; }
+.library-banner a { color: var(--accent); font-weight: 600; text-decoration: none; }
+footer { padding: 1rem clamp(1rem, 4vw, 3rem) 3rem; color: var(--ink-soft); font-size: 0.75rem; max-width: 70ch; }
+@media (prefers-reduced-motion: no-preference) {
+  .card { transition: transform 0.15s ease, border-color 0.15s ease; }
+  .card:hover { transform: translateY(-2px); border-color: var(--accent); }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>HKTK Slide Prompt Gallery</h1>
+  <p class="subtitle">37 slide styles rendered as real mockups — background, type, and mood as they'll actually look. 24 are openly licensed (MIT) and safe to redistribute; 13 are adapted from HKTK's internal 301-sample style library for personal use. Expand a card for the full prompt and copy it into Claude, Codex, or AGY.</p>
+  <div class="filters" id="filters">
+    <button class="chip" data-tag="all" aria-pressed="true">all</button>
+    <button class="chip" data-tag="art-deco" aria-pressed="false">art-deco</button><button class="chip" data-tag="bold" aria-pressed="false">bold</button><button class="chip" data-tag="brutalist" aria-pressed="false">brutalist</button><button class="chip" data-tag="business" aria-pressed="false">business</button><button class="chip" data-tag="consulting-exec" aria-pressed="false">consulting-exec</button><button class="chip" data-tag="corporate" aria-pressed="false">corporate</button><button class="chip" data-tag="creative-portfolio" aria-pressed="false">creative-portfolio</button><button class="chip" data-tag="dark" aria-pressed="false">dark</button><button class="chip" data-tag="developer" aria-pressed="false">developer</button><button class="chip" data-tag="editorial" aria-pressed="false">editorial</button><button class="chip" data-tag="education" aria-pressed="false">education</button><button class="chip" data-tag="elegant" aria-pressed="false">elegant</button><button class="chip" data-tag="friendly" aria-pressed="false">friendly</button><button class="chip" data-tag="futuristic" aria-pressed="false">futuristic</button><button class="chip" data-tag="glass-neumorphic" aria-pressed="false">glass-neumorphic</button><button class="chip" data-tag="high-energy-pop" aria-pressed="false">high-energy-pop</button><button class="chip" data-tag="internal" aria-pressed="false">internal</button><button class="chip" data-tag="isometric-3d" aria-pressed="false">isometric-3d</button><button class="chip" data-tag="japanese" aria-pressed="false">japanese</button><button class="chip" data-tag="literary" aria-pressed="false">literary</button><button class="chip" data-tag="minimal" aria-pressed="false">minimal</button><button class="chip" data-tag="minimal-premium" aria-pressed="false">minimal-premium</button><button class="chip" data-tag="mit" aria-pressed="false">mit</button><button class="chip" data-tag="pitch" aria-pressed="false">pitch</button><button class="chip" data-tag="precise" aria-pressed="false">precise</button><button class="chip" data-tag="print-texture" aria-pressed="false">print-texture</button><button class="chip" data-tag="product" aria-pressed="false">product</button><button class="chip" data-tag="retro" aria-pressed="false">retro</button><button class="chip" data-tag="retro-digital" aria-pressed="false">retro-digital</button><button class="chip" data-tag="soft" aria-pressed="false">soft</button><button class="chip" data-tag="sports" aria-pressed="false">sports</button><button class="chip" data-tag="tactile" aria-pressed="false">tactile</button><button class="chip" data-tag="tech-product" aria-pressed="false">tech-product</button><button class="chip" data-tag="technical" aria-pressed="false">technical</button><button class="chip" data-tag="witty" aria-pressed="false">witty</button>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="library-banner">
+    <span>Looking for more effects &amp; moods (glassmorphism, brutalism, ukiyo-e, 170+ more)?</span>
+    <a href="../../banana-prompts/site/index.html">Browse the full 301-sample style library &rarr;</a>
+  </div>
+</header>
+<main>
+  <div class="grid" id="grid">
+    
+    <article class="card" data-slug="athletic-energy" data-tags="high-energy-pop,bold,sports,mit">
+      
+      <div class="slide slide--diagonal" style="--s-bg:#111111;--s-ink:#FFFFFF;--s-accent:#CCFF00;--s-accent2:#FF4500;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #CCFF0055, transparent 55%), radial-gradient(circle at 75% 70%, #FF450066, transparent 60%), linear-gradient(160deg, #FFFFFF22, #111111)"></div>
+        <div class="s-content">
+        <div class="s-band"></div>
+        <div class="s-kicker">PERFORMANCE REVIEW</div>
+        <h3 class="s-headline s-headline--diagonal">Q3 was our fastest season yet.</h3>
+        <p class="s-subhead">Sprint times down 4.2% across every division.</p></div>
+      </div>
+      <div class="card-body">
+        <h2>Athletic Energy</h2>
+        <p class="use-case">Performance reviews, competitions, and energetic launches</p>
+        <div class="palette-row"><span style="background:#111111"></span><span style="background:#FFFFFF"></span><span style="background:#CCFF00"></span><span style="background:#FF4500"></span></div>
+        <div class="tags"><span class="tag">high-energy-pop</span><span class="tag">bold</span><span class="tag">sports</span></div>
+        <div class="fonts">Barlow Condensed, Archivo Black</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Create speed and impact with asphalt black, white, bolt lime, neon orange, condensed italic headings, and scoreboard numerals.
+
+[LAYOUT RULES]
+Use diagonal crops, motion imagery, skewed navigation, score-style metrics, and high-contrast stripes behind key claims.
+
+[FORBIDDEN]
+No trademarked uniforms or logos, gratuitous flames, unreadable motion blur, more than two neon accents, or static centered layouts.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="athletic-energy">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/serenakeyitan/awesome-notebookLM-prompts#sports--athletic--energy">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="aurora" data-tags="pitch,tech-product,bold,mit">
+      
+      <div class="slide slide--tech" style="--s-bg:#0B1B3A;--s-ink:#FFFFFF;--s-accent:#22D3EE;--s-accent2:#7C3AED;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #22D3EE55, transparent 55%), radial-gradient(circle at 75% 70%, #7C3AED66, transparent 60%), linear-gradient(160deg, #FFFFFF22, #0B1B3A)"></div>
+        <div class="s-content">
+        <div class="s-kicker s-kicker--mono">// SERIES A</div>
+        <h3 class="s-headline s-headline--tech">The infrastructure layer for agentic finance.</h3>
+        <p class="s-subhead s-subhead--mono">$2.4M ARR, 140% net revenue retention.</p>
+        <div class="s-node"></div></div>
+      </div>
+      <div class="card-body">
+        <h2>Aurora SaaS Pitch</h2>
+        <p class="use-case">SaaS fundraising and product vision</p>
+        <div class="palette-row"><span style="background:#0B1B3A"></span><span style="background:#22D3EE"></span><span style="background:#7C3AED"></span><span style="background:#FFFFFF"></span></div>
+        <div class="tags"><span class="tag">pitch</span><span class="tag">tech-product</span><span class="tag">bold</span></div>
+        <div class="fonts">Manrope, Space Grotesk</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Build a dark SaaS pitch with disciplined cyan-to-violet light accents, crisp sans type, and luminous data emphasis.
+
+[LAYOUT RULES]
+Keep one claim per slide; alternate hero statements, product frames, metric bands, and simple proof diagrams with generous margins.
+
+[FORBIDDEN]
+No rainbow gradients, glassmorphism stacks, tiny dashboard text, generic icons, or ornamental glow.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="aurora">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/SlideSpeak/presentation-design-prompts/tree/main/prompts/aurora">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="basel" data-tags="creative-portfolio,minimal,bold,mit">
+      
+      <div class="slide slide--split" style="--s-bg:#FFFFFF;--s-ink:#111111;--s-accent:#E1261C;--s-accent2:#E1261C;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        
+        <div class="s-content">
+        <div class="s-split-left" style="background:radial-gradient(circle at 30% 20%, #E1261C55, transparent 55%), radial-gradient(circle at 75% 70%, #E1261C66, transparent 60%), linear-gradient(160deg, #11111122, #FFFFFF)"></div>
+        <div class="s-split-right">
+          <div class="s-kicker">PORTFOLIO 04</div>
+          <h3 class="s-headline">Form follows argument.</h3>
+          <p class="s-subhead">Selected identity systems, 2023–2026.</p>
+        </div></div>
+      </div>
+      <div class="card-body">
+        <h2>Basel Type Poster</h2>
+        <p class="use-case">Design portfolios and manifesto decks</p>
+        <div class="palette-row"><span style="background:#FFFFFF"></span><span style="background:#111111"></span><span style="background:#E1261C"></span></div>
+        <div class="tags"><span class="tag">creative-portfolio</span><span class="tag">minimal</span><span class="tag">bold</span></div>
+        <div class="fonts">Archivo, Helvetica Neue</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Treat oversized black typography and one red accent as the primary visual language on white.
+
+[LAYOUT RULES]
+Use asymmetric Swiss grids, hard alignment, extreme scale contrast, and at most one supporting image or diagram per slide.
+
+[FORBIDDEN]
+No centered templates, soft gradients, decorative illustrations, rounded UI cards, or timid type scale.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="basel">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/SlideSpeak/presentation-design-prompts/tree/main/prompts/basel">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="block-world" data-tags="isometric-3d,education,friendly,internal">
+      
+      <div class="slide slide--photo" style="--s-bg:#F5F5DC;--s-ink:#5D4037;--s-accent:#FF9800;--s-accent2:#CDDC39;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <span class="badge-real">real sample</span>
+        <img class="s-photo-real" src="../previews/nano_11.webp" alt="Block World sample" loading="lazy" />
+        <div class="s-scrim" style="background:linear-gradient(180deg, transparent 40%, #F5F5DCf0 92%)"></div>
+        <div class="s-content s-content--photo">
+          <div class="s-kicker">HOW IT WORKS</div>
+          <h3 class="s-headline">Three blocks, one pipeline.</h3>
+          <p class="s-subhead">Ingest, transform, serve — visualized.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <h2>Block World</h2>
+        <p class="use-case">Product architecture explainers with a playful, approachable tone</p>
+        <div class="palette-row"><span style="background:#F5F5DC"></span><span style="background:#5D4037"></span><span style="background:#FF9800"></span><span style="background:#CDDC39"></span></div>
+        <div class="tags"><span class="tag">isometric-3d</span><span class="tag">education</span><span class="tag">friendly</span></div>
+        <div class="fonts">Nunito, M PLUS Rounded 1c</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use isometric low-poly clay-rendered blocks on a soft beige or sky-blue field, with rounded bold type and matte lighting.
+
+[LAYOUT RULES]
+Build one isometric scene per slide as the focal explainer; keep labels short and let building-block shapes carry structure.
+
+[FORBIDDEN]
+No photoreal 3D rendering, cluttered multi-scene slides, glossy plastic highlights, or tiny illegible labels.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="block-world">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-internal">Internal</span> &middot; <a href="../gallery/banana-prompts/prompts.json#n=11">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="boardroom" data-tags="consulting-exec,corporate,minimal,mit">
+      
+      <div class="slide slide--hero" style="--s-bg:#FFFFFF;--s-ink:#1F3A5F;--s-accent:#5B6B7E;--s-accent2:#EEF2F7;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #5B6B7E55, transparent 55%), radial-gradient(circle at 75% 70%, #EEF2F766, transparent 60%), linear-gradient(160deg, #1F3A5F22, #FFFFFF)"></div>
+        <div class="s-content">
+        <div class="s-kicker">STRATEGY REVIEW</div>
+        <div class="s-rule"></div>
+        <h3 class="s-headline">Consolidate three warehouses into one regional hub.</h3>
+        <p class="s-subhead">Projected savings: $4.1M annually, break-even in 14 months.</p></div>
+      </div>
+      <div class="card-body">
+        <h2>Boardroom Argument</h2>
+        <p class="use-case">Board reviews and strategy recommendations</p>
+        <div class="palette-row"><span style="background:#FFFFFF"></span><span style="background:#EEF2F7"></span><span style="background:#1F3A5F"></span><span style="background:#5B6B7E"></span></div>
+        <div class="tags"><span class="tag">consulting-exec</span><span class="tag">corporate</span><span class="tag">minimal</span></div>
+        <div class="fonts">Source Sans 3</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use a white, navy, and steel-blue consulting system with neutral sans typography and hairline rules.
+
+[LAYOUT RULES]
+Lead every content slide with a full-sentence conclusion; use strict grids, sourced footers, restrained charts, and a small progress tracker.
+
+[FORBIDDEN]
+No decorative imagery, gradients, shadows, rounded cards, vague titles, or more than two accents.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="boardroom">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/SlideSpeak/presentation-design-prompts/tree/main/prompts/boardroom">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="bold-signal" data-tags="pitch,high-energy-pop,bold,mit">
+      
+      <div class="slide slide--diagonal" style="--s-bg:#1A1A1A;--s-ink:#FFFFFF;--s-accent:#FF5722;--s-accent2:#2D2D2D;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #FF572255, transparent 55%), radial-gradient(circle at 75% 70%, #2D2D2D66, transparent 60%), linear-gradient(160deg, #FFFFFF22, #1A1A1A)"></div>
+        <div class="s-content">
+        <div class="s-band"></div>
+        <div class="s-kicker">KEYNOTE</div>
+        <h3 class="s-headline s-headline--diagonal">Ship the thing that scares you.</h3>
+        <p class="s-subhead">Three principles from four years of shipping.</p></div>
+      </div>
+      <div class="card-body">
+        <h2>Bold Signal</h2>
+        <p class="use-case">Keynotes and decisive pitch moments</p>
+        <div class="palette-row"><span style="background:#1A1A1A"></span><span style="background:#2D2D2D"></span><span style="background:#FF5722"></span><span style="background:#FFFFFF"></span></div>
+        <div class="tags"><span class="tag">pitch</span><span class="tag">high-energy-pop</span><span class="tag">bold</span></div>
+        <div class="fonts">Archivo Black, Space Grotesk</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use a charcoal gradient field, one orange signal card, white type, and heavy display typography.
+
+[LAYOUT RULES]
+Place section number top-left, navigation top-right, and the primary claim bottom-left on a precise grid.
+
+[FORBIDDEN]
+No extra accent colors, card mosaics, decorative icons, soft hierarchy, or multiple hero messages.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="bold-signal">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/zarazhangrui/frontend-slides/blob/main/STYLE_PRESETS.md#1-bold-signal">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="broadsheet" data-tags="editorial,consulting-exec,elegant,mit">
+      
+      <div class="slide slide--editorial" style="--s-bg:#F0EAE0;--s-ink:#1A1A1A;--s-accent:#7A2333;--s-accent2:#7A2333;--s-font:Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #7A233355, transparent 55%), radial-gradient(circle at 75% 70%, #7A233366, transparent 60%), linear-gradient(160deg, #1A1A1A22, #F0EAE0)"></div>
+        <div class="s-content">
+        <div class="s-kicker">MARKET BRIEFING</div>
+        <h3 class="s-headline s-headline--editorial">Rate cuts won’t save Q4 margins.</h3>
+        <p class="s-subhead">A read on consumer credit ahead of the holiday season.</p>
+        <div class="s-byline">Source: internal analysis</div></div>
+      </div>
+      <div class="card-body">
+        <h2>Broadsheet Briefing</h2>
+        <p class="use-case">Financial commentary and executive briefings</p>
+        <div class="palette-row"><span style="background:#F0EAE0"></span><span style="background:#1A1A1A"></span><span style="background:#7A2333"></span></div>
+        <div class="tags"><span class="tag">editorial</span><span class="tag">consulting-exec</span><span class="tag">elegant</span></div>
+        <div class="fonts">Libre Franklin, Source Serif 4</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Compose a serious newspaper-inspired system with serif headlines, compact sans annotations, fine rules, and warm newsprint.
+
+[LAYOUT RULES]
+Use column logic, strong headline hierarchy, pull quotes, captioned charts, and explicit sources; preserve a clear reading order.
+
+[FORBIDDEN]
+No faux-aged stains, novelty newspaper mastheads, dense unreadable columns, clip art, or unsourced figures.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="broadsheet">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/SlideSpeak/presentation-design-prompts/tree/main/prompts/broadsheet">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="circuit" data-tags="tech-product,dark,technical,mit">
+      
+      <div class="slide slide--tech" style="--s-bg:#2B2B2B;--s-ink:#F5F1EA;--s-accent:#3ECF8E;--s-accent2:#B87333;--s-font:ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #3ECF8E55, transparent 55%), radial-gradient(circle at 75% 70%, #B8733366, transparent 60%), linear-gradient(160deg, #F5F1EA22, #2B2B2B)"></div>
+        <div class="s-content">
+        <div class="s-kicker s-kicker--mono">// SYSTEM DESIGN</div>
+        <h3 class="s-headline s-headline--tech">Route requests through the regional edge first.</h3>
+        <p class="s-subhead s-subhead--mono">Latency: 340ms → 61ms at p99.</p>
+        <div class="s-node"></div></div>
+      </div>
+      <div class="card-body">
+        <h2>Circuit Product System</h2>
+        <p class="use-case">Engineering architecture and product systems</p>
+        <div class="palette-row"><span style="background:#2B2B2B"></span><span style="background:#B87333"></span><span style="background:#3ECF8E"></span><span style="background:#F5F1EA"></span></div>
+        <div class="tags"><span class="tag">tech-product</span><span class="tag">dark</span><span class="tag">technical</span></div>
+        <div class="fonts">IBM Plex Sans, IBM Plex Mono</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use a dark technical canvas with copper traces, signal-green states, monospaced labels, and schematic precision.
+
+[LAYOUT RULES]
+Route information along a visible grid; show architecture as labeled nodes and paths, and isolate one active route or component per slide.
+
+[FORBIDDEN]
+No fake code walls, cyberpunk clutter, illegible wiring, 3D circuitry, or unexplained decoration.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="circuit">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/SlideSpeak/presentation-design-prompts/tree/main/prompts/circuit">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="clay-capsule" data-tags="glass-neumorphic,friendly,education,internal">
+      
+      <div class="slide slide--photo" style="--s-bg:#FFB7B2;--s-ink:#FFFFFF;--s-accent:#B5EAD7;--s-accent2:#E2F0CB;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <span class="badge-real">real sample</span>
+        <img class="s-photo-real" src="../previews/nano_55.webp" alt="Clay Capsule sample" loading="lazy" />
+        <div class="s-scrim" style="background:linear-gradient(180deg, transparent 40%, #FFB7B2f0 92%)"></div>
+        <div class="s-content s-content--photo">
+          <div class="s-kicker">WELCOME</div>
+          <h3 class="s-headline">Let’s get you set up.</h3>
+          <p class="s-subhead">Three taps, no jargon, five minutes.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <h2>Clay Capsule</h2>
+        <p class="use-case">Playful onboarding and consumer app storytelling</p>
+        <div class="palette-row"><span style="background:#FFB7B2"></span><span style="background:#B5EAD7"></span><span style="background:#E2F0CB"></span><span style="background:#FFFFFF"></span></div>
+        <div class="tags"><span class="tag">glass-neumorphic</span><span class="tag">friendly</span><span class="tag">education</span></div>
+        <div class="fonts">Nunito, Quicksand</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use soft pastel clay-like 3D UI — capsules, puffed rectangles, spheres, and floating cards with gentle lighting.
+
+[LAYOUT RULES]
+Center content with generous padding so shapes feel like they're floating; keep one clay element as the focal object per slide.
+
+[FORBIDDEN]
+No sharp edges, saturated neon pastels, dense text on clay shapes, or more than three floating objects per slide.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="clay-capsule">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-internal">Internal</span> &middot; <a href="../gallery/banana-prompts/prompts.json#n=55">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="seminar" data-tags="education,minimal,corporate,mit">
+      
+      <div class="slide slide--notebook" style="--s-bg:#FFFFFF;--s-ink:#2B2B2B;--s-accent:#1E4E8C;--s-accent2:#1E4E8C;--s-font:Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #1E4E8C55, transparent 55%), radial-gradient(circle at 75% 70%, #1E4E8C66, transparent 60%), linear-gradient(160deg, #2B2B2B22, #FFFFFF)"></div>
+        <div class="s-content">
+        <div class="s-tabs"><span></span><span></span><span></span></div>
+        <div class="s-kicker">RESEARCH TALK</div>
+        <h3 class="s-headline">Why attention collapses under long context.</h3>
+        <p class="s-subhead">Evidence from 40 transformer checkpoints.</p></div>
+      </div>
+      <div class="card-body">
+        <h2>Clear Seminar</h2>
+        <p class="use-case">Lectures, research talks, and training</p>
+        <div class="palette-row"><span style="background:#FFFFFF"></span><span style="background:#2B2B2B"></span><span style="background:#1E4E8C"></span></div>
+        <div class="tags"><span class="tag">education</span><span class="tag">minimal</span><span class="tag">corporate</span></div>
+        <div class="fonts">Source Sans 3, Source Serif 4</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use an academic light theme with readable type, restrained blue emphasis, and high-clarity diagrams.
+
+[LAYOUT RULES]
+Present one teaching point per slide; pair concise claims with a single exhibit, label every axis, and reserve a consistent citation footer.
+
+[FORBIDDEN]
+No bullet walls, tiny citations, decorative stock photos, unexplained equations, or low-contrast text.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="seminar">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/SlideSpeak/presentation-design-prompts/tree/main/prompts/seminar">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="creative-voltage" data-tags="creative-portfolio,high-energy-pop,retro,mit">
+      
+      <div class="slide slide--diagonal" style="--s-bg:#0066FF;--s-ink:#FFFFFF;--s-accent:#D4FF00;--s-accent2:#1A1A2E;--s-font:ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #D4FF0055, transparent 55%), radial-gradient(circle at 75% 70%, #1A1A2E66, transparent 60%), linear-gradient(160deg, #FFFFFF22, #0066FF)"></div>
+        <div class="s-content">
+        <div class="s-band"></div>
+        <div class="s-kicker">CAMPAIGN 002</div>
+        <h3 class="s-headline s-headline--diagonal">Loud enough to skip.</h3>
+        <p class="s-subhead">A launch built for six-second attention spans.</p></div>
+      </div>
+      <div class="card-body">
+        <h2>Creative Voltage</h2>
+        <p class="use-case">Creative direction and campaign launches</p>
+        <div class="palette-row"><span style="background:#0066FF"></span><span style="background:#1A1A2E"></span><span style="background:#D4FF00"></span><span style="background:#FFFFFF"></span></div>
+        <div class="tags"><span class="tag">creative-portfolio</span><span class="tag">high-energy-pop</span><span class="tag">retro</span></div>
+        <div class="fonts">Syne, Space Mono</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Combine electric blue, deep navy, neon yellow, geometric display type, and sparse halftone texture.
+
+[LAYOUT RULES]
+Use opposing split panels, mono metadata, a single neon badge, and controlled overlap to create forward motion.
+
+[FORBIDDEN]
+No rainbow neon, illegible scripts, full-slide halftones, sticker clutter, or generic cyberpunk imagery.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="creative-voltage">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/zarazhangrui/frontend-slides/blob/main/STYLE_PRESETS.md#3-creative-voltage">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="cyanotype-plan" data-tags="tech-product,technical,dark,internal">
+      
+      <div class="slide slide--photo" style="--s-bg:#0000CD;--s-ink:#FFFFFF;--s-accent:#ADD8E6;--s-accent2:#ADD8E6;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <span class="badge-real">real sample</span>
+        <img class="s-photo-real" src="../previews/nano_129.webp" alt="Cyanotype Plan sample" loading="lazy" />
+        <div class="s-scrim" style="background:linear-gradient(180deg, transparent 40%, #0000CDf0 92%)"></div>
+        <div class="s-content s-content--photo">
+          <div class="s-kicker">SYSTEM DESIGN</div>
+          <h3 class="s-headline">Every component, to scale.</h3>
+          <p class="s-subhead">Section view of the new platform.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <h2>Cyanotype Plan</h2>
+        <p class="use-case">Architecture, hardware, and systems documentation reveals</p>
+        <div class="palette-row"><span style="background:#0000CD"></span><span style="background:#FFFFFF"></span><span style="background:#ADD8E6"></span></div>
+        <div class="tags"><span class="tag">tech-product</span><span class="tag">technical</span><span class="tag">dark</span></div>
+        <div class="fonts">Architects Daughter</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use medium-blue blueprint fields with white line-drawing type and light-blue dimension annotations, drafting-font headlines.
+
+[LAYOUT RULES]
+Draw content like architectural or mechanical drawings — dimension lines, section marks, and uppercase labels on a visible grid.
+
+[FORBIDDEN]
+No photographic textures, color outside the blue/white/light-blue system, decorative icons, or illegible dimension text.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="cyanotype-plan">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-internal">Internal</span> &middot; <a href="../gallery/banana-prompts/prompts.json#n=129">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="dark-botanical" data-tags="minimal-premium,creative-portfolio,elegant,mit">
+      
+      <div class="slide slide--split" style="--s-bg:#0F0F0F;--s-ink:#E8E4DF;--s-accent:#D4A574;--s-accent2:#9A9590;--s-font:Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;">
+        
+        <div class="s-content">
+        <div class="s-split-left" style="background:radial-gradient(circle at 30% 20%, #D4A57455, transparent 55%), radial-gradient(circle at 75% 70%, #9A959066, transparent 60%), linear-gradient(160deg, #E8E4DF22, #0F0F0F)"></div>
+        <div class="s-split-right">
+          <div class="s-kicker">REFLECTIONS</div>
+          <h3 class="s-headline">What we chose not to build.</h3>
+          <p class="s-subhead">Notes on restraint, three years in.</p>
+        </div></div>
+      </div>
+      <div class="card-body">
+        <h2>Dark Botanical</h2>
+        <p class="use-case">Luxury portfolios and reflective narratives</p>
+        <div class="palette-row"><span style="background:#0F0F0F"></span><span style="background:#E8E4DF"></span><span style="background:#9A9590"></span><span style="background:#D4A574"></span><span style="background:#E8B4B8"></span></div>
+        <div class="tags"><span class="tag">minimal-premium</span><span class="tag">creative-portfolio</span><span class="tag">elegant</span></div>
+        <div class="fonts">Cormorant, IBM Plex Sans</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use near-black, warm ivory, muted gold and pink, elegant serif display type, and blurred abstract color fields.
+
+[LAYOUT RULES]
+Center sparse content, balance soft corner shapes with thin vertical rules, and reserve italics for a signature phrase.
+
+[FORBIDDEN]
+No literal botanical illustrations, bright saturation, heavy shadows, dense copy, or generic luxury gold gradients.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="dark-botanical">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/zarazhangrui/frontend-slides/blob/main/STYLE_PRESETS.md#4-dark-botanical">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="electric-studio" data-tags="consulting-exec,tech-product,bold,mit">
+      
+      <div class="slide slide--tech" style="--s-bg:#0A0A0A;--s-ink:#FFFFFF;--s-accent:#4361EE;--s-accent2:#4361EE;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #4361EE55, transparent 55%), radial-gradient(circle at 75% 70%, #4361EE66, transparent 60%), linear-gradient(160deg, #FFFFFF22, #0A0A0A)"></div>
+        <div class="s-content">
+        <div class="s-kicker s-kicker--mono">// PROPOSAL</div>
+        <h3 class="s-headline s-headline--tech">A new checkout, in six weeks.</h3>
+        <p class="s-subhead s-subhead--mono">Scope, timeline, and the team we’d assign.</p>
+        <div class="s-node"></div></div>
+      </div>
+      <div class="card-body">
+        <h2>Electric Studio</h2>
+        <p class="use-case">Agency proposals and product announcements</p>
+        <div class="palette-row"><span style="background:#0A0A0A"></span><span style="background:#FFFFFF"></span><span style="background:#4361EE"></span></div>
+        <div class="tags"><span class="tag">consulting-exec</span><span class="tag">tech-product</span><span class="tag">bold</span></div>
+        <div class="fonts">Manrope</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use a sharp white-and-electric-blue split with black anchors and confident Manrope typography.
+
+[LAYOUT RULES]
+Divide the canvas into two vertical panels, add one edge accent bar, and let a quote or claim span the hierarchy.
+
+[FORBIDDEN]
+No gradients, excessive logos, rounded card grids, more than one accent, or equal-weight text blocks.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="electric-studio">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/zarazhangrui/frontend-slides/blob/main/STYLE_PRESETS.md#2-electric-studio">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="frosted-aurora" data-tags="retro-digital,high-energy-pop,pitch,internal">
+      
+      <div class="slide slide--photo" style="--s-bg:#FFFFFF;--s-ink:#C58AF9;--s-accent:#7EE8FA;--s-accent2:#FF9CEE;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <span class="badge-real">real sample</span>
+        <img class="s-photo-real" src="../previews/nano_08.webp" alt="Frosted Aurora sample" loading="lazy" />
+        <div class="s-scrim" style="background:linear-gradient(180deg, transparent 40%, #FFFFFFf0 92%)"></div>
+        <div class="s-content s-content--photo">
+          <div class="s-kicker">LAUNCH</div>
+          <h3 class="s-headline">Soft is the new loud.</h3>
+          <p class="s-subhead">Introducing Aura, out this spring.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <h2>Frosted Aurora</h2>
+        <p class="use-case">Consumer launches wanting a soft nostalgic 90s-web mood</p>
+        <div class="palette-row"><span style="background:#FFFFFF"></span><span style="background:#FF9CEE"></span><span style="background:#7EE8FA"></span><span style="background:#C58AF9"></span></div>
+        <div class="tags"><span class="tag">retro-digital</span><span class="tag">high-energy-pop</span><span class="tag">pitch</span></div>
+        <div class="fonts">Inter</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use an aurora-gradient background seen through frosted glass, with white knockout or translucent type and soft bordered highlights.
+
+[LAYOUT RULES]
+Let the gradient carry the mood while type stays restrained and legible; one translucent panel per slide holds the message.
+
+[FORBIDDEN]
+No harsh rainbow banding, illegible type over gradient, retro clip art, or more than one frosted panel.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="frosted-aurora">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-internal">Internal</span> &middot; <a href="../gallery/banana-prompts/prompts.json#n=8">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="gilded-line" data-tags="art-deco,minimal-premium,elegant,internal">
+      
+      <div class="slide slide--photo" style="--s-bg:#050505;--s-ink:#F8F8FF;--s-accent:#D4AF37;--s-accent2:#C0C0C0;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <span class="badge-real">real sample</span>
+        <img class="s-photo-real" src="../previews/nano_10.webp" alt="Gilded Line sample" loading="lazy" />
+        <div class="s-scrim" style="background:linear-gradient(180deg, transparent 40%, #050505f0 92%)"></div>
+        <div class="s-content s-content--photo">
+          <div class="s-kicker">10 YEARS</div>
+          <h3 class="s-headline">A decade, quietly done well.</h3>
+          <p class="s-subhead">An anniversary retrospective.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <h2>Gilded Line</h2>
+        <p class="use-case">Luxury brand narratives and gala or anniversary decks</p>
+        <div class="palette-row"><span style="background:#050505"></span><span style="background:#D4AF37"></span><span style="background:#C0C0C0"></span><span style="background:#F8F8FF"></span></div>
+        <div class="tags"><span class="tag">art-deco</span><span class="tag">minimal-premium</span><span class="tag">elegant</span></div>
+        <div class="fonts">Futura</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use rich black or deep emerald with gold and silver accents, art-deco display type, and radiating symmetric geometric frames.
+
+[LAYOUT RULES]
+Center content inside a radial or fan-shaped ornamental frame; let one decorative motif bookend each slide, never more.
+
+[FORBIDDEN]
+No generic gold gradients, cluttered ornamentation, low-contrast gold-on-gold text, or asymmetric deco motifs.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="gilded-line">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-internal">Internal</span> &middot; <a href="../gallery/banana-prompts/prompts.json#n=10">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="glass-panel" data-tags="glass-neumorphic,tech-product,dark,internal">
+      
+      <div class="slide slide--photo" style="--s-bg:#1A1A1A;--s-ink:#FFFFFF;--s-accent:#3D3D3D;--s-accent2:#3D3D3D;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <span class="badge-real">real sample</span>
+        <img class="s-photo-real" src="../previews/nano_166.webp" alt="Glass Panel sample" loading="lazy" />
+        <div class="s-scrim" style="background:linear-gradient(180deg, transparent 40%, #1A1A1Af0 92%)"></div>
+        <div class="s-content s-content--photo">
+          <div class="s-kicker">PRODUCT REVEAL</div>
+          <h3 class="s-headline">One dashboard, everything visible.</h3>
+          <p class="s-subhead">Real-time metrics behind a single frosted pane.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <h2>Glass Panel</h2>
+        <p class="use-case">Product UI reveals and premium dark dashboards</p>
+        <div class="palette-row"><span style="background:#1A1A1A"></span><span style="background:#FFFFFF"></span><span style="background:#3D3D3D"></span></div>
+        <div class="tags"><span class="tag">glass-neumorphic</span><span class="tag">tech-product</span><span class="tag">dark</span></div>
+        <div class="fonts">Inter</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use near-black glass panels with heavy backdrop blur and white text floating on frosted, semi-transparent surfaces.
+
+[LAYOUT RULES]
+Keep hierarchy legible through one blur depth per panel, generous negative space, and disciplined alignment; avoid stacking more than two glass layers.
+
+[FORBIDDEN]
+No rainbow refraction, illegible low-contrast text on glass, cluttered thumbnail grids, or decorative icons.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="glass-panel">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-internal">Internal</span> &middot; <a href="../gallery/banana-prompts/prompts.json#n=166">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="ink-wave" data-tags="japanese,editorial,creative-portfolio,internal">
+      
+      <div class="slide slide--photo" style="--s-bg:#FBF6F0;--s-ink:#1B1B1B;--s-accent:#F19072;--s-accent2:#8E352E;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <span class="badge-real">real sample</span>
+        <img class="s-photo-real" src="../previews/nano_15.webp" alt="Ink Wave sample" loading="lazy" />
+        <div class="s-scrim" style="background:linear-gradient(180deg, transparent 40%, #FBF6F0f0 92%)"></div>
+        <div class="s-content s-content--photo">
+          <div class="s-kicker">HERITAGE</div>
+          <h3 class="s-headline">What travels with us.</h3>
+          <p class="s-subhead">Notes on craft across three generations.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <h2>Ink Wave</h2>
+        <p class="use-case">Culture, travel, and brand-heritage storytelling</p>
+        <div class="palette-row"><span style="background:#FBF6F0"></span><span style="background:#1B1B1B"></span><span style="background:#8E352E"></span><span style="background:#F19072"></span></div>
+        <div class="tags"><span class="tag">japanese</span><span class="tag">editorial</span><span class="tag">creative-portfolio</span></div>
+        <div class="fonts">Modern Mincho, Gothic sans</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use ecru or indigo grounds with ink-black or bengara-red type, flat woodblock-print color, and bold cropped compositions.
+
+[LAYOUT RULES]
+Let one large motif (wave, mountain, fabric pattern) anchor the composition; keep type minimal with a clear title/body split.
+
+[FORBIDDEN]
+No photographic realism, cluttered multiple motifs, low-contrast red-on-red text, or generic clip-art waves.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="ink-wave">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-internal">Internal</span> &middot; <a href="../gallery/banana-prompts/prompts.json#n=15">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="mature-magazine" data-tags="editorial,creative-portfolio,soft,mit">
+      
+      <div class="slide slide--editorial" style="--s-bg:#D9A9A6;--s-ink:#FFFFFF;--s-accent:#F3D9D3;--s-accent2:#2B2B2B;--s-font:Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #F3D9D355, transparent 55%), radial-gradient(circle at 75% 70%, #2B2B2B66, transparent 60%), linear-gradient(160deg, #FFFFFF22, #D9A9A6)"></div>
+        <div class="s-content">
+        <div class="s-kicker">PROFILE</div>
+        <h3 class="s-headline s-headline--editorial">The quiet return of analog mornings.</h3>
+        <p class="s-subhead">How one founder built a business around slowness.</p>
+        <div class="s-byline">Source: internal analysis</div></div>
+      </div>
+      <div class="card-body">
+        <h2>Mature Magazine</h2>
+        <p class="use-case">Lifestyle, product, and personal-brand stories</p>
+        <div class="palette-row"><span style="background:#D9A9A6"></span><span style="background:#F3D9D3"></span><span style="background:#2B2B2B"></span><span style="background:#FFFFFF"></span></div>
+        <div class="tags"><span class="tag">editorial</span><span class="tag">creative-portfolio</span><span class="tag">soft</span></div>
+        <div class="fonts">Noto Serif, Noto Sans, Caveat</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use a polished magazine composition with matte pink, charcoal editorial type, a refined serif/sans mix, and restrained handwritten notes.
+
+[LAYOUT RULES]
+Anchor a cutout subject centrally, distribute numbered side notes asymmetrically, and use crop-mark lines and one vertical edge caption.
+
+[FORBIDDEN]
+No childish brights, flashy gradients, heavy shadows, excessive speech bubbles, or weak subject isolation.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="mature-magazine">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/serenakeyitan/awesome-notebookLM-prompts#magazine-style">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="memphis-mono" data-tags="brutalist,creative-portfolio,editorial,internal">
+      
+      <div class="slide slide--photo" style="--s-bg:#FFFFFF;--s-ink:#000000;--s-accent:#000000;--s-accent2:#000000;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <span class="badge-real">real sample</span>
+        <img class="s-photo-real" src="../previews/nano_153.webp" alt="Memphis Mono sample" loading="lazy" />
+        <div class="s-scrim" style="background:linear-gradient(180deg, transparent 40%, #FFFFFFf0 92%)"></div>
+        <div class="s-content s-content--photo">
+          <div class="s-kicker">COLLECTION 04</div>
+          <h3 class="s-headline">Nothing extra.</h3>
+          <p class="s-subhead">A monochrome study in restraint.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <h2>Memphis Mono</h2>
+        <p class="use-case">High-fashion brand decks and editorial portfolio openers</p>
+        <div class="palette-row"><span style="background:#FFFFFF"></span><span style="background:#000000"></span></div>
+        <div class="tags"><span class="tag">brutalist</span><span class="tag">creative-portfolio</span><span class="tag">editorial</span></div>
+        <div class="fonts">Didot</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use high-fashion magazine layout logic in pure black and white — extreme cropping, generous whitespace, and one dominant Didot-style serif moment.
+
+[LAYOUT RULES]
+Let scale contrast do the work: one oversized headline, one small caption block, and nothing competing for attention.
+
+[FORBIDDEN]
+No color accents, busy patterns, small evenly-sized text blocks, or centered symmetrical defaults.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="memphis-mono">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-internal">Internal</span> &middot; <a href="../gallery/banana-prompts/prompts.json#n=153">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="modern-newspaper" data-tags="editorial,high-energy-pop,business,mit">
+      
+      <div class="slide slide--editorial" style="--s-bg:#FFFFFF;--s-ink:#111111;--s-accent:#FFCC00;--s-accent2:#F5F5F5;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #FFCC0055, transparent 55%), radial-gradient(circle at 75% 70%, #F5F5F566, transparent 60%), linear-gradient(160deg, #11111122, #FFFFFF)"></div>
+        <div class="s-content">
+        <div class="s-kicker">TREND WATCH</div>
+        <h3 class="s-headline s-headline--editorial">Everyone’s building an agent. Few are shipping one.</h3>
+        <p class="s-subhead">A field report from 40 product teams.</p>
+        <div class="s-byline">Source: internal analysis</div></div>
+      </div>
+      <div class="card-body">
+        <h2>Modern Newspaper</h2>
+        <p class="use-case">Business media explainers and trend reports</p>
+        <div class="palette-row"><span style="background:#FFFFFF"></span><span style="background:#F5F5F5"></span><span style="background:#111111"></span><span style="background:#FFCC00"></span><span style="background:#FF3333"></span></div>
+        <div class="tags"><span class="tag">editorial</span><span class="tag">high-energy-pop</span><span class="tag">business</span></div>
+        <div class="fonts">Archivo Black, Noto Sans</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Mix smartphone-first business editorial energy with Swiss asymmetry, jet-black type, and electric yellow or alert red emphasis.
+
+[LAYOUT RULES]
+Use one message per slide, 10:1 headline-to-body scale, monochrome cutouts, sharp grids, and deliberate alternation between dense type and empty space.
+
+[FORBIDDEN]
+No markdown symbols in displayed copy, centered default layouts, multiple competing accents, or long descriptive titles.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="modern-newspaper">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/serenakeyitan/awesome-notebookLM-prompts#modern-newspaper">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="monolith" data-tags="minimal-premium,pitch,dark,mit">
+      
+      <div class="slide slide--tech" style="--s-bg:#0D0D0D;--s-ink:#F5F1E8;--s-accent:#B8B4AC;--s-accent2:#B8B4AC;--s-font:Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #B8B4AC55, transparent 55%), radial-gradient(circle at 75% 70%, #B8B4AC66, transparent 60%), linear-gradient(160deg, #F5F1E822, #0D0D0D)"></div>
+        <div class="s-content">
+        <div class="s-kicker s-kicker--mono">// INVESTMENT MEMO</div>
+        <h3 class="s-headline s-headline--tech">One number matters here.</h3>
+        <p class="s-subhead s-subhead--mono">92% gross margin, held for six consecutive quarters.</p>
+        <div class="s-node"></div></div>
+      </div>
+      <div class="card-body">
+        <h2>Monolith Premium Pitch</h2>
+        <p class="use-case">Luxury fundraising and premium brand narratives</p>
+        <div class="palette-row"><span style="background:#0D0D0D"></span><span style="background:#F5F1E8"></span><span style="background:#B8B4AC"></span></div>
+        <div class="tags"><span class="tag">minimal-premium</span><span class="tag">pitch</span><span class="tag">dark</span></div>
+        <div class="fonts">DM Sans, Cormorant Garamond</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Create expensive restraint: near-black fields, warm-white type, sparse silver rules, and rare serif moments.
+
+[LAYOUT RULES]
+Allow one idea, number, or image to dominate; use large margins, deliberate pauses, and minimal evidence blocks.
+
+[FORBIDDEN]
+No neon, busy charts, decorative gradients, crowded logos, cheap gold effects, or multiple focal points.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="monolith">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/SlideSpeak/presentation-design-prompts/tree/main/prompts/monolith">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="neon-cyber" data-tags="tech-product,high-energy-pop,futuristic,mit">
+      
+      <div class="slide slide--tech" style="--s-bg:#0A0F1C;--s-ink:#00FFCC;--s-accent:#FF00AA;--s-accent2:#FF00AA;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #FF00AA55, transparent 55%), radial-gradient(circle at 75% 70%, #FF00AA66, transparent 60%), linear-gradient(160deg, #00FFCC22, #0A0F1C)"></div>
+        <div class="s-content">
+        <div class="s-kicker s-kicker--mono">// SECURITY</div>
+        <h3 class="s-headline s-headline--tech">The breach that didn’t happen.</h3>
+        <p class="s-subhead s-subhead--mono">How anomaly detection caught it in 400ms.</p>
+        <div class="s-node"></div></div>
+      </div>
+      <div class="card-body">
+        <h2>Neon Cyber</h2>
+        <p class="use-case">Security, infrastructure, and future-tech launches</p>
+        <div class="palette-row"><span style="background:#0A0F1C"></span><span style="background:#00FFCC"></span><span style="background:#FF00AA"></span></div>
+        <div class="tags"><span class="tag">tech-product</span><span class="tag">high-energy-pop</span><span class="tag">futuristic</span></div>
+        <div class="fonts">Clash Display, Satoshi</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use deep navy with cyan as the functional signal and magenta as a rare secondary event; keep typography crisp and futuristic.
+
+[LAYOUT RULES]
+Build on a faint technical grid, use particles only for depth, and connect claims through clean routes, nodes, and status markers.
+
+[FORBIDDEN]
+No illegible glow, Matrix rain, gratuitous particles, neon on every element, or fake terminal content.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="neon-cyber">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/zarazhangrui/frontend-slides/blob/main/STYLE_PRESETS.md#9-neon-cyber">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="notebook-tabs" data-tags="education,editorial,tactile,mit">
+      
+      <div class="slide slide--editorial" style="--s-bg:#2D2D2D;--s-ink:#F8F6F1;--s-accent:#98D4BB;--s-accent2:#C7B8EA;--s-font:Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #98D4BB55, transparent 55%), radial-gradient(circle at 75% 70%, #C7B8EA66, transparent 60%), linear-gradient(160deg, #F8F6F122, #2D2D2D)"></div>
+        <div class="s-content">
+        <div class="s-kicker">MODULE 3</div>
+        <h3 class="s-headline s-headline--editorial">Reading a balance sheet in ten minutes.</h3>
+        <p class="s-subhead">Workbook, exercises, and one worked example.</p>
+        <div class="s-byline">Source: internal analysis</div></div>
+      </div>
+      <div class="card-body">
+        <h2>Notebook Tabs</h2>
+        <p class="use-case">Courses, handbooks, and structured workshops</p>
+        <div class="palette-row"><span style="background:#2D2D2D"></span><span style="background:#F8F6F1"></span><span style="background:#98D4BB"></span><span style="background:#C7B8EA"></span><span style="background:#F4B8C5"></span></div>
+        <div class="tags"><span class="tag">education</span><span class="tag">editorial</span><span class="tag">tactile</span></div>
+        <div class="fonts">Bodoni Moda, DM Sans</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Set a cream paper page on charcoal with elegant editorial headings and muted pastel index tabs.
+
+[LAYOUT RULES]
+Use tabs as section navigation, a consistent paper frame, subtle binder details, and generous lesson-content margins.
+
+[FORBIDDEN]
+No photoreal stationery, excessive shadows, tiny vertical labels, random tab colors, or overcrowded notes.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="notebook-tabs">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/zarazhangrui/frontend-slides/blob/main/STYLE_PRESETS.md#5-notebook-tabs">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="paper-and-ink" data-tags="editorial,minimal-premium,literary,mit">
+      
+      <div class="slide slide--editorial" style="--s-bg:#FAF9F7;--s-ink:#1A1A1A;--s-accent:#C41E3A;--s-accent2:#C41E3A;--s-font:Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #C41E3A55, transparent 55%), radial-gradient(circle at 75% 70%, #C41E3A66, transparent 60%), linear-gradient(160deg, #1A1A1A22, #FAF9F7)"></div>
+        <div class="s-content">
+        <div class="s-kicker">LECTURE</div>
+        <h3 class="s-headline s-headline--editorial">On the slow death of the footnote.</h3>
+        <p class="s-subhead">Notes toward a defense of citation.</p>
+        <div class="s-byline">Source: internal analysis</div></div>
+      </div>
+      <div class="card-body">
+        <h2>Paper and Ink</h2>
+        <p class="use-case">Literary talks, reports, and thoughtful education</p>
+        <div class="palette-row"><span style="background:#FAF9F7"></span><span style="background:#1A1A1A"></span><span style="background:#C41E3A"></span></div>
+        <div class="tags"><span class="tag">editorial</span><span class="tag">minimal-premium</span><span class="tag">literary</span></div>
+        <div class="fonts">Cormorant Garamond, Source Serif 4</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use warm cream, charcoal, and a restrained crimson with literary serif typography and fine ink-like rules.
+
+[LAYOUT RULES]
+Open sections with a drop cap or pull quote, preserve book-like margins, and use horizontal rules to separate evidence and commentary.
+
+[FORBIDDEN]
+No parchment textures, quill imagery, ornate borders, dense manuscript pages, or crimson used as a background fill.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="paper-and-ink">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/zarazhangrui/frontend-slides/blob/main/STYLE_PRESETS.md#12-paper--ink">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="pastel-geometry" data-tags="education,tech-product,friendly,mit">
+      
+      <div class="slide slide--tech" style="--s-bg:#C8D9E6;--s-ink:#7C6AAD;--s-accent:#F0B4D4;--s-accent2:#FAF9F7;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #F0B4D455, transparent 55%), radial-gradient(circle at 75% 70%, #FAF9F766, transparent 60%), linear-gradient(160deg, #7C6AAD22, #C8D9E6)"></div>
+        <div class="s-content">
+        <div class="s-kicker s-kicker--mono">// GETTING STARTED</div>
+        <h3 class="s-headline s-headline--tech">Your first workspace, in three steps.</h3>
+        <p class="s-subhead s-subhead--mono">No credit card, no setup call, five minutes.</p>
+        <div class="s-node"></div></div>
+      </div>
+      <div class="card-body">
+        <h2>Pastel Geometry</h2>
+        <p class="use-case">Onboarding, explainers, and approachable product stories</p>
+        <div class="palette-row"><span style="background:#C8D9E6"></span><span style="background:#FAF9F7"></span><span style="background:#F0B4D4"></span><span style="background:#A8D4C4"></span><span style="background:#7C6AAD"></span></div>
+        <div class="tags"><span class="tag">education</span><span class="tag">tech-product</span><span class="tag">friendly</span></div>
+        <div class="fonts">Plus Jakarta Sans</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use a soft blue field, warm-white card, disciplined pastel pills, and friendly geometric sans type.
+
+[LAYOUT RULES]
+Anchor content inside one rounded frame; use five consistent edge pills as rhythm and keep diagrams simple and labeled.
+
+[FORBIDDEN]
+No candy-color overload, nested cards, childish icons, weak contrast, or arbitrary pill dimensions.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="pastel-geometry">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/zarazhangrui/frontend-slides/blob/main/STYLE_PRESETS.md#6-pastel-geometry">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="poly-cube" data-tags="isometric-3d,tech-product,bold,internal">
+      
+      <div class="slide slide--photo" style="--s-bg:#FFFFFF;--s-ink:#000000;--s-accent:#FF0000;--s-accent2:#00FF00;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <span class="badge-real">real sample</span>
+        <img class="s-photo-real" src="../previews/nano_244.webp" alt="Poly Cube sample" loading="lazy" />
+        <div class="s-scrim" style="background:linear-gradient(180deg, transparent 40%, #FFFFFFf0 92%)"></div>
+        <div class="s-content s-content--photo">
+          <div class="s-kicker">DATA MODEL</div>
+          <h3 class="s-headline">Every face tells a different story.</h3>
+          <p class="s-subhead">Six facets of the same customer.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <h2>Poly Cube</h2>
+        <p class="use-case">Data and systems stories that want geometric, puzzle-like energy</p>
+        <div class="palette-row"><span style="background:#FFFFFF"></span><span style="background:#000000"></span><span style="background:#FF0000"></span><span style="background:#00FF00"></span><span style="background:#0000FF"></span></div>
+        <div class="tags"><span class="tag">isometric-3d</span><span class="tag">tech-product</span><span class="tag">bold</span></div>
+        <div class="fonts">bold block sans</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use faceted low-poly 3D geometry — rotating-cube logic in primary red, green, and blue — on white with bold black type.
+
+[LAYOUT RULES]
+Treat the cube or polygon cluster as a single 3x3 structural grid anchor; keep supporting text minimal and high-contrast.
+
+[FORBIDDEN]
+No pastel recoloring, more than three primary accents at once, busy backgrounds, or crowded polygon fields.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="poly-cube">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-internal">Internal</span> &middot; <a href="../gallery/banana-prompts/prompts.json#n=244">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="premium-mockup" data-tags="tech-product,minimal-premium,product,mit">
+      
+      <div class="slide slide--tech" style="--s-bg:#FFFFFF;--s-ink:#000000;--s-accent:#EBE021;--s-accent2:#F5F5F7;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #EBE02155, transparent 55%), radial-gradient(circle at 75% 70%, #F5F5F766, transparent 60%), linear-gradient(160deg, #00000022, #FFFFFF)"></div>
+        <div class="s-content">
+        <div class="s-kicker s-kicker--mono">// PRODUCT LAUNCH</div>
+        <h3 class="s-headline s-headline--tech">Introducing Aperture, on every screen you own.</h3>
+        <p class="s-subhead s-subhead--mono">Available today on iOS, web, and desktop.</p>
+        <div class="s-node"></div></div>
+      </div>
+      <div class="card-body">
+        <h2>Premium Product Mockup</h2>
+        <p class="use-case">Product launches and interface showcases</p>
+        <div class="palette-row"><span style="background:#FFFFFF"></span><span style="background:#F5F5F7"></span><span style="background:#000000"></span><span style="background:#8D59E9"></span><span style="background:#EBE021"></span></div>
+        <div class="tags"><span class="tag">tech-product</span><span class="tag">minimal-premium</span><span class="tag">product</span></div>
+        <div class="fonts">Manrope, IBM Plex Sans</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use a clean studio system with white, pale gray, and black stages plus restrained electric-purple and acid-yellow actions.
+
+[LAYOUT RULES]
+Make the product screen occupy 70–80% of the canvas; use soft grounded shadows, precise UI spacing, cropped scale, and short spec labels.
+
+[FORBIDDEN]
+No unlicensed brand-device replicas, pixelated screens, excessive gloss, floating UI clutter, or more than two accents.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="premium-mockup">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/serenakeyitan/awesome-notebookLM-prompts#studio--mockup--premium">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="raw-mono" data-tags="brutalist,tech-product,developer,internal">
+      
+      <div class="slide slide--photo" style="--s-bg:#FFFFFF;--s-ink:#000000;--s-accent:#FF0000;--s-accent2:#CCCCCC;--s-font:ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;">
+        <span class="badge-real">real sample</span>
+        <img class="s-photo-real" src="../previews/nano_09.webp" alt="Raw Mono sample" loading="lazy" />
+        <div class="s-scrim" style="background:linear-gradient(180deg, transparent 40%, #FFFFFFf0 92%)"></div>
+        <div class="s-content s-content--photo">
+          <div class="s-kicker">POSTMORTEM</div>
+          <h3 class="s-headline">The build broke because we skipped a step.</h3>
+          <p class="s-subhead">Root cause, fix, and the check we added.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <h2>Raw Mono</h2>
+        <p class="use-case">Engineering postmortems and unapologetically plain technical reports</p>
+        <div class="palette-row"><span style="background:#FFFFFF"></span><span style="background:#CCCCCC"></span><span style="background:#000000"></span><span style="background:#FF0000"></span></div>
+        <div class="tags"><span class="tag">brutalist</span><span class="tag">tech-product</span><span class="tag">developer</span></div>
+        <div class="fonts">Courier New, Roboto Mono</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use raw system-default UI energy: giant monospace type, unstyled rectangles, and pasted-in imagery with visible CSS-frame lines.
+
+[LAYOUT RULES]
+Keep a strict title/body split, let monospace numerals carry data, and use pure blue or red only as a single warning-level accent.
+
+[FORBIDDEN]
+No rounded corners, gradients, decorative icons, soft shadows, or more than one accent color.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="raw-mono">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-internal">Internal</span> &middot; <a href="../gallery/banana-prompts/prompts.json#n=9">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="riso-print" data-tags="print-texture,editorial,creative-portfolio,internal">
+      
+      <div class="slide slide--photo" style="--s-bg:#FFF8DC;--s-ink:#000080;--s-accent:#DAA520;--s-accent2:#FF6347;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <span class="badge-real">real sample</span>
+        <img class="s-photo-real" src="../previews/nano_140.webp" alt="Riso Print sample" loading="lazy" />
+        <div class="s-scrim" style="background:linear-gradient(180deg, transparent 40%, #FFF8DCf0 92%)"></div>
+        <div class="s-content s-content--photo">
+          <div class="s-kicker">ISSUE 03</div>
+          <h3 class="s-headline">Made by hand, mostly.</h3>
+          <p class="s-subhead">Notes from a year of small batches.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <h2>Riso Print</h2>
+        <p class="use-case">Zines, indie brand decks, and handmade-feeling reports</p>
+        <div class="palette-row"><span style="background:#FFF8DC"></span><span style="background:#000080"></span><span style="background:#DAA520"></span><span style="background:#FF6347"></span></div>
+        <div class="tags"><span class="tag">print-texture</span><span class="tag">editorial</span><span class="tag">creative-portfolio</span></div>
+        <div class="fonts">handwritten sans</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use cream paper with ink-blue text, flat gold and red risograph-style misregistration, and rough newsprint texture.
+
+[LAYOUT RULES]
+Let bold sans or handwritten headlines bleed slightly off-register; keep ink-bleed texture as atmosphere, not decoration.
+
+[FORBIDDEN]
+No digital-clean gradients, glossy finishes, more than three riso colors per slide, or perfectly aligned registration.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="riso-print">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-internal">Internal</span> &middot; <a href="../gallery/banana-prompts/prompts.json#n=140">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="soft-relief" data-tags="glass-neumorphic,minimal,friendly,internal">
+      
+      <div class="slide slide--photo" style="--s-bg:#EBECF0;--s-ink:#A0A0A0;--s-accent:#BABECC;--s-accent2:#FFFFFF;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <span class="badge-real">real sample</span>
+        <img class="s-photo-real" src="../previews/nano_150.webp" alt="Soft Relief sample" loading="lazy" />
+        <div class="s-scrim" style="background:linear-gradient(180deg, transparent 40%, #EBECF0f0 92%)"></div>
+        <div class="s-content s-content--photo">
+          <div class="s-kicker">WELLNESS</div>
+          <h3 class="s-headline">Slow down, on purpose.</h3>
+          <p class="s-subhead">A four-week reset for teams running too hot.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <h2>Soft Relief</h2>
+        <p class="use-case">Wellness, lifestyle, and soft-tech product intros</p>
+        <div class="palette-row"><span style="background:#EBECF0"></span><span style="background:#A0A0A0"></span><span style="background:#FFFFFF"></span><span style="background:#BABECC"></span></div>
+        <div class="tags"><span class="tag">glass-neumorphic</span><span class="tag">minimal</span><span class="tag">friendly</span></div>
+        <div class="fonts">Nunito</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use an off-white canvas with soft embossed UI elements — light-highlight and shadow pairs that read as gently raised or pressed.
+
+[LAYOUT RULES]
+Treat every content block as a rounded relief card; keep contrast low but text legible, and never let more than one element look "pressed in" at once.
+
+[FORBIDDEN]
+No harsh drop shadows, saturated colors, sharp corners, or more than two relief depths per slide.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="soft-relief">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-internal">Internal</span> &middot; <a href="../gallery/banana-prompts/prompts.json#n=150">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="split-pastel" data-tags="pitch,high-energy-pop,friendly,mit">
+      
+      <div class="slide slide--diagonal" style="--s-bg:#F5E6DC;--s-ink:#1A1A1A;--s-accent:#C8F0D8;--s-accent2:#E4DFF0;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #C8F0D855, transparent 55%), radial-gradient(circle at 75% 70%, #E4DFF066, transparent 60%), linear-gradient(160deg, #1A1A1A22, #F5E6DC)"></div>
+        <div class="s-content">
+        <div class="s-band"></div>
+        <div class="s-kicker">WORKSHOP</div>
+        <h3 class="s-headline s-headline--diagonal">Let’s design your onboarding flow together.</h3>
+        <p class="s-subhead">Bring a problem, leave with a prototype.</p></div>
+      </div>
+      <div class="card-body">
+        <h2>Split Pastel</h2>
+        <p class="use-case">Consumer product pitches and creative workshops</p>
+        <div class="palette-row"><span style="background:#F5E6DC"></span><span style="background:#E4DFF0"></span><span style="background:#1A1A1A"></span><span style="background:#C8F0D8"></span><span style="background:#F0F0C8"></span></div>
+        <div class="tags"><span class="tag">pitch</span><span class="tag">high-energy-pop</span><span class="tag">friendly</span></div>
+        <div class="fonts">Outfit</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Divide the canvas between peach and lavender, using dark type and a few mint or yellow badges.
+
+[LAYOUT RULES]
+Keep a stable vertical split, use the right-side grid only as subtle structure, and place one clear action or takeaway per slide.
+
+[FORBIDDEN]
+No pastel rainbow, noisy patterns, pill swarms, low-contrast copy, or symmetrical default composition.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="split-pastel">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/zarazhangrui/frontend-slides/blob/main/STYLE_PRESETS.md#7-split-pastel">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="swiss-modern" data-tags="consulting-exec,minimal-premium,precise,mit">
+      
+      <div class="slide slide--hero" style="--s-bg:#FFFFFF;--s-ink:#000000;--s-accent:#FF3300;--s-accent2:#FF3300;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #FF330055, transparent 55%), radial-gradient(circle at 75% 70%, #FF330066, transparent 60%), linear-gradient(160deg, #00000022, #FFFFFF)"></div>
+        <div class="s-content">
+        <div class="s-kicker">STRATEGY</div>
+        <div class="s-rule"></div>
+        <h3 class="s-headline">Precision is the strategy.</h3>
+        <p class="s-subhead">A framework for decisions under uncertainty.</p></div>
+      </div>
+      <div class="card-body">
+        <h2>Swiss Modern</h2>
+        <p class="use-case">Executive narratives and design-led strategy</p>
+        <div class="palette-row"><span style="background:#FFFFFF"></span><span style="background:#000000"></span><span style="background:#FF3300"></span></div>
+        <div class="tags"><span class="tag">consulting-exec</span><span class="tag">minimal-premium</span><span class="tag">precise</span></div>
+        <div class="fonts">Archivo, Nunito</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use pure white, black, and one signal red with a visible Bauhaus-informed grid and strong sans hierarchy.
+
+[LAYOUT RULES]
+Align asymmetrically, expose the grid through rules and geometry, and make one typographic or data statement dominant.
+
+[FORBIDDEN]
+No centered hero defaults, rounded UI components, gradients, decorative photos, or more than one accent color.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="swiss-modern">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/zarazhangrui/frontend-slides/blob/main/STYLE_PRESETS.md#11-swiss-modern">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="terminal-green" data-tags="tech-product,minimal,developer,mit">
+      
+      <div class="slide slide--tech" style="--s-bg:#0D1117;--s-ink:#39D353;--s-accent:#39D353;--s-accent2:#39D353;--s-font:ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #39D35355, transparent 55%), radial-gradient(circle at 75% 70%, #39D35366, transparent 60%), linear-gradient(160deg, #39D35322, #0D1117)"></div>
+        <div class="s-content">
+        <div class="s-kicker s-kicker--mono">// POSTMORTEM</div>
+        <h3 class="s-headline s-headline--tech">22 minutes of downtime, one bad migration.</h3>
+        <p class="s-subhead s-subhead--mono">What broke, what we shipped, what changes next.</p>
+        <div class="s-node"></div></div>
+      </div>
+      <div class="card-body">
+        <h2>Terminal Green</h2>
+        <p class="use-case">Developer tools, incident reviews, and code walkthroughs</p>
+        <div class="palette-row"><span style="background:#0D1117"></span><span style="background:#39D353"></span></div>
+        <div class="tags"><span class="tag">tech-product</span><span class="tag">minimal</span><span class="tag">developer</span></div>
+        <div class="fonts">JetBrains Mono</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use GitHub-dark black, terminal green, and monospace typography as a focused developer interface.
+
+[LAYOUT RULES]
+Structure slides like concise command sessions with clear prompts, syntax emphasis, scan-line restraint, and one blinking-cursor motif.
+
+[FORBIDDEN]
+No fake hacking clichés, long code dumps, bright secondary colors, low-resolution CRT noise, or decorative command output.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="terminal-green">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/zarazhangrui/frontend-slides/blob/main/STYLE_PRESETS.md#10-terminal-green">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="varsity" data-tags="high-energy-pop,education,retro,mit">
+      
+      <div class="slide slide--diagonal" style="--s-bg:#F3E9D2;--s-ink:#1B2A4A;--s-accent:#C9A227;--s-accent2:#A3242A;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #C9A22755, transparent 55%), radial-gradient(circle at 75% 70%, #A3242A66, transparent 60%), linear-gradient(160deg, #1B2A4A22, #F3E9D2)"></div>
+        <div class="s-content">
+        <div class="s-band"></div>
+        <div class="s-kicker">KICKOFF 2026</div>
+        <h3 class="s-headline s-headline--diagonal">One team, one scoreboard.</h3>
+        <p class="s-subhead">Everything we’re building toward this season.</p></div>
+      </div>
+      <div class="card-body">
+        <h2>Varsity Rally</h2>
+        <p class="use-case">Team kickoffs, pep rallies, and campus events</p>
+        <div class="palette-row"><span style="background:#F3E9D2"></span><span style="background:#A3242A"></span><span style="background:#1B2A4A"></span><span style="background:#C9A227"></span></div>
+        <div class="tags"><span class="tag">high-energy-pop</span><span class="tag">education</span><span class="tag">retro</span></div>
+        <div class="fonts">Roboto Slab, Archivo Black</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use collegiate block type, warm athletic colors, stitched-line accents, and bold score-card numerals.
+
+[LAYOUT RULES]
+Build diagonal momentum with large numbers, team-color bands, roster grids, and one rallying phrase per slide.
+
+[FORBIDDEN]
+No trademarked team marks, mascot clip art, distressed texture overload, weak contrast, or cramped copy.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="varsity">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/SlideSpeak/presentation-design-prompts/tree/main/prompts/varsity">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="vintage-editorial" data-tags="editorial,creative-portfolio,witty,mit">
+      
+      <div class="slide slide--editorial" style="--s-bg:#F5F3EE;--s-ink:#1A1A1A;--s-accent:#E8D4C0;--s-accent2:#555555;--s-font:Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;">
+        <div class="s-photo" style="background:radial-gradient(circle at 30% 20%, #E8D4C055, transparent 55%), radial-gradient(circle at 75% 70%, #55555566, transparent 60%), linear-gradient(160deg, #1A1A1A22, #F5F3EE)"></div>
+        <div class="s-content">
+        <div class="s-kicker">ESSAY</div>
+        <h3 class="s-headline s-headline--editorial">In defense of the boring meeting.</h3>
+        <p class="s-subhead">Structure is not the enemy of creativity.</p>
+        <div class="s-byline">Source: internal analysis</div></div>
+      </div>
+      <div class="card-body">
+        <h2>Vintage Editorial</h2>
+        <p class="use-case">Essays, brand stories, and opinionated talks</p>
+        <div class="palette-row"><span style="background:#F5F3EE"></span><span style="background:#1A1A1A"></span><span style="background:#555555"></span><span style="background:#E8D4C0"></span></div>
+        <div class="tags"><span class="tag">editorial</span><span class="tag">creative-portfolio</span><span class="tag">witty</span></div>
+        <div class="fonts">Fraunces, Work Sans</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use warm cream, black, muted beige, expressive serif headlines, and clean sans body copy.
+
+[LAYOUT RULES]
+Center the principal editorial claim, counterbalance it with one geometric line-circle motif, and frame calls to action with simple borders.
+
+[FORBIDDEN]
+No literal vintage illustrations, sepia filters, ornate frames, shadow-heavy cards, or generic motivational copy.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="vintage-editorial">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-mit">MIT</span> &middot; <a href="https://github.com/zarazhangrui/frontend-slides/blob/main/STYLE_PRESETS.md#8-vintage-editorial">source</a></p>
+      </div>
+    </article>
+    <article class="card" data-slug="warning-grid" data-tags="retro-digital,high-energy-pop,futuristic,internal">
+      
+      <div class="slide slide--photo" style="--s-bg:#FFD700;--s-ink:#000000;--s-accent:#00FFFF;--s-accent2:#00FFFF;--s-font:-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
+        <span class="badge-real">real sample</span>
+        <img class="s-photo-real" src="../previews/nano_34.webp" alt="Warning Grid sample" loading="lazy" />
+        <div class="s-scrim" style="background:linear-gradient(180deg, transparent 40%, #FFD700f0 92%)"></div>
+        <div class="s-content s-content--photo">
+          <div class="s-kicker">SYSTEM ALERT</div>
+          <h3 class="s-headline">This changes how you ship.</h3>
+          <p class="s-subhead">Read before your next deploy.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <h2>Warning Grid</h2>
+        <p class="use-case">Cyberpunk-adjacent product reveals and hazard-themed campaigns</p>
+        <div class="palette-row"><span style="background:#FFD700"></span><span style="background:#000000"></span><span style="background:#00FFFF"></span></div>
+        <div class="tags"><span class="tag">retro-digital</span><span class="tag">high-energy-pop</span><span class="tag">futuristic</span></div>
+        <div class="fonts">Stencil, Space Grotesk</div>
+        <details>
+          <summary>full prompt</summary>
+          <pre>[STYLE SPEC]
+Use cyber-yellow and black with cyan accents, stencil or angular sans headlines, and hazard-label design language.
+
+[LAYOUT RULES]
+Use warning-stripe bands, barcode-style metadata, and one glitch accent — never let stripes overwhelm the message.
+
+[FORBIDDEN]
+No literal barcodes without meaning, excessive glitch noise, soft rounded type, or pastel softening.</pre>
+        </details>
+        <div class="card-actions">
+          <button class="copy" data-slug="warning-grid">copy prompt</button>
+        </div>
+        <p class="source"><span class="license-tag license-internal">Internal</span> &middot; <a href="../gallery/banana-prompts/prompts.json#n=34">source</a></p>
+      </div>
+    </article>
+  </div>
+</main>
+<footer>
+  Photo/texture areas are CSS-generated duotone gradients in each style's own accent colors — this page is a self-contained artifact and cannot fetch external images. Sources: SlideSpeak <code>presentation-design-prompts</code>, <code>awesome-notebookLM-prompts</code>, and the local <code>frontend-slides</code> skill's <code>STYLE_PRESETS.md</code> — all MIT-licensed. Full attribution in <a href="../LICENSES.md">LICENSES.md</a>. Generated by <code>scripts/build_slide_gallery.py</code> from <code>gallery/slide-prompts/prompts/*.md</code>.
+</footer>
+<script>
+const DATA = {"athletic-energy": {"prompt": "[STYLE SPEC]\nCreate speed and impact with asphalt black, white, bolt lime, neon orange, condensed italic headings, and scoreboard numerals.\n\n[LAYOUT RULES]\nUse diagonal crops, motion imagery, skewed navigation, score-style metrics, and high-contrast stripes behind key claims.\n\n[FORBIDDEN]\nNo trademarked uniforms or logos, gratuitous flames, unreadable motion blur, more than two neon accents, or static centered layouts."}, "aurora": {"prompt": "[STYLE SPEC]\nBuild a dark SaaS pitch with disciplined cyan-to-violet light accents, crisp sans type, and luminous data emphasis.\n\n[LAYOUT RULES]\nKeep one claim per slide; alternate hero statements, product frames, metric bands, and simple proof diagrams with generous margins.\n\n[FORBIDDEN]\nNo rainbow gradients, glassmorphism stacks, tiny dashboard text, generic icons, or ornamental glow."}, "basel": {"prompt": "[STYLE SPEC]\nTreat oversized black typography and one red accent as the primary visual language on white.\n\n[LAYOUT RULES]\nUse asymmetric Swiss grids, hard alignment, extreme scale contrast, and at most one supporting image or diagram per slide.\n\n[FORBIDDEN]\nNo centered templates, soft gradients, decorative illustrations, rounded UI cards, or timid type scale."}, "block-world": {"prompt": "[STYLE SPEC]\nUse isometric low-poly clay-rendered blocks on a soft beige or sky-blue field, with rounded bold type and matte lighting.\n\n[LAYOUT RULES]\nBuild one isometric scene per slide as the focal explainer; keep labels short and let building-block shapes carry structure.\n\n[FORBIDDEN]\nNo photoreal 3D rendering, cluttered multi-scene slides, glossy plastic highlights, or tiny illegible labels."}, "boardroom": {"prompt": "[STYLE SPEC]\nUse a white, navy, and steel-blue consulting system with neutral sans typography and hairline rules.\n\n[LAYOUT RULES]\nLead every content slide with a full-sentence conclusion; use strict grids, sourced footers, restrained charts, and a small progress tracker.\n\n[FORBIDDEN]\nNo decorative imagery, gradients, shadows, rounded cards, vague titles, or more than two accents."}, "bold-signal": {"prompt": "[STYLE SPEC]\nUse a charcoal gradient field, one orange signal card, white type, and heavy display typography.\n\n[LAYOUT RULES]\nPlace section number top-left, navigation top-right, and the primary claim bottom-left on a precise grid.\n\n[FORBIDDEN]\nNo extra accent colors, card mosaics, decorative icons, soft hierarchy, or multiple hero messages."}, "broadsheet": {"prompt": "[STYLE SPEC]\nCompose a serious newspaper-inspired system with serif headlines, compact sans annotations, fine rules, and warm newsprint.\n\n[LAYOUT RULES]\nUse column logic, strong headline hierarchy, pull quotes, captioned charts, and explicit sources; preserve a clear reading order.\n\n[FORBIDDEN]\nNo faux-aged stains, novelty newspaper mastheads, dense unreadable columns, clip art, or unsourced figures."}, "circuit": {"prompt": "[STYLE SPEC]\nUse a dark technical canvas with copper traces, signal-green states, monospaced labels, and schematic precision.\n\n[LAYOUT RULES]\nRoute information along a visible grid; show architecture as labeled nodes and paths, and isolate one active route or component per slide.\n\n[FORBIDDEN]\nNo fake code walls, cyberpunk clutter, illegible wiring, 3D circuitry, or unexplained decoration."}, "clay-capsule": {"prompt": "[STYLE SPEC]\nUse soft pastel clay-like 3D UI \u2014 capsules, puffed rectangles, spheres, and floating cards with gentle lighting.\n\n[LAYOUT RULES]\nCenter content with generous padding so shapes feel like they're floating; keep one clay element as the focal object per slide.\n\n[FORBIDDEN]\nNo sharp edges, saturated neon pastels, dense text on clay shapes, or more than three floating objects per slide."}, "seminar": {"prompt": "[STYLE SPEC]\nUse an academic light theme with readable type, restrained blue emphasis, and high-clarity diagrams.\n\n[LAYOUT RULES]\nPresent one teaching point per slide; pair concise claims with a single exhibit, label every axis, and reserve a consistent citation footer.\n\n[FORBIDDEN]\nNo bullet walls, tiny citations, decorative stock photos, unexplained equations, or low-contrast text."}, "creative-voltage": {"prompt": "[STYLE SPEC]\nCombine electric blue, deep navy, neon yellow, geometric display type, and sparse halftone texture.\n\n[LAYOUT RULES]\nUse opposing split panels, mono metadata, a single neon badge, and controlled overlap to create forward motion.\n\n[FORBIDDEN]\nNo rainbow neon, illegible scripts, full-slide halftones, sticker clutter, or generic cyberpunk imagery."}, "cyanotype-plan": {"prompt": "[STYLE SPEC]\nUse medium-blue blueprint fields with white line-drawing type and light-blue dimension annotations, drafting-font headlines.\n\n[LAYOUT RULES]\nDraw content like architectural or mechanical drawings \u2014 dimension lines, section marks, and uppercase labels on a visible grid.\n\n[FORBIDDEN]\nNo photographic textures, color outside the blue/white/light-blue system, decorative icons, or illegible dimension text."}, "dark-botanical": {"prompt": "[STYLE SPEC]\nUse near-black, warm ivory, muted gold and pink, elegant serif display type, and blurred abstract color fields.\n\n[LAYOUT RULES]\nCenter sparse content, balance soft corner shapes with thin vertical rules, and reserve italics for a signature phrase.\n\n[FORBIDDEN]\nNo literal botanical illustrations, bright saturation, heavy shadows, dense copy, or generic luxury gold gradients."}, "electric-studio": {"prompt": "[STYLE SPEC]\nUse a sharp white-and-electric-blue split with black anchors and confident Manrope typography.\n\n[LAYOUT RULES]\nDivide the canvas into two vertical panels, add one edge accent bar, and let a quote or claim span the hierarchy.\n\n[FORBIDDEN]\nNo gradients, excessive logos, rounded card grids, more than one accent, or equal-weight text blocks."}, "frosted-aurora": {"prompt": "[STYLE SPEC]\nUse an aurora-gradient background seen through frosted glass, with white knockout or translucent type and soft bordered highlights.\n\n[LAYOUT RULES]\nLet the gradient carry the mood while type stays restrained and legible; one translucent panel per slide holds the message.\n\n[FORBIDDEN]\nNo harsh rainbow banding, illegible type over gradient, retro clip art, or more than one frosted panel."}, "gilded-line": {"prompt": "[STYLE SPEC]\nUse rich black or deep emerald with gold and silver accents, art-deco display type, and radiating symmetric geometric frames.\n\n[LAYOUT RULES]\nCenter content inside a radial or fan-shaped ornamental frame; let one decorative motif bookend each slide, never more.\n\n[FORBIDDEN]\nNo generic gold gradients, cluttered ornamentation, low-contrast gold-on-gold text, or asymmetric deco motifs."}, "glass-panel": {"prompt": "[STYLE SPEC]\nUse near-black glass panels with heavy backdrop blur and white text floating on frosted, semi-transparent surfaces.\n\n[LAYOUT RULES]\nKeep hierarchy legible through one blur depth per panel, generous negative space, and disciplined alignment; avoid stacking more than two glass layers.\n\n[FORBIDDEN]\nNo rainbow refraction, illegible low-contrast text on glass, cluttered thumbnail grids, or decorative icons."}, "ink-wave": {"prompt": "[STYLE SPEC]\nUse ecru or indigo grounds with ink-black or bengara-red type, flat woodblock-print color, and bold cropped compositions.\n\n[LAYOUT RULES]\nLet one large motif (wave, mountain, fabric pattern) anchor the composition; keep type minimal with a clear title/body split.\n\n[FORBIDDEN]\nNo photographic realism, cluttered multiple motifs, low-contrast red-on-red text, or generic clip-art waves."}, "mature-magazine": {"prompt": "[STYLE SPEC]\nUse a polished magazine composition with matte pink, charcoal editorial type, a refined serif/sans mix, and restrained handwritten notes.\n\n[LAYOUT RULES]\nAnchor a cutout subject centrally, distribute numbered side notes asymmetrically, and use crop-mark lines and one vertical edge caption.\n\n[FORBIDDEN]\nNo childish brights, flashy gradients, heavy shadows, excessive speech bubbles, or weak subject isolation."}, "memphis-mono": {"prompt": "[STYLE SPEC]\nUse high-fashion magazine layout logic in pure black and white \u2014 extreme cropping, generous whitespace, and one dominant Didot-style serif moment.\n\n[LAYOUT RULES]\nLet scale contrast do the work: one oversized headline, one small caption block, and nothing competing for attention.\n\n[FORBIDDEN]\nNo color accents, busy patterns, small evenly-sized text blocks, or centered symmetrical defaults."}, "modern-newspaper": {"prompt": "[STYLE SPEC]\nMix smartphone-first business editorial energy with Swiss asymmetry, jet-black type, and electric yellow or alert red emphasis.\n\n[LAYOUT RULES]\nUse one message per slide, 10:1 headline-to-body scale, monochrome cutouts, sharp grids, and deliberate alternation between dense type and empty space.\n\n[FORBIDDEN]\nNo markdown symbols in displayed copy, centered default layouts, multiple competing accents, or long descriptive titles."}, "monolith": {"prompt": "[STYLE SPEC]\nCreate expensive restraint: near-black fields, warm-white type, sparse silver rules, and rare serif moments.\n\n[LAYOUT RULES]\nAllow one idea, number, or image to dominate; use large margins, deliberate pauses, and minimal evidence blocks.\n\n[FORBIDDEN]\nNo neon, busy charts, decorative gradients, crowded logos, cheap gold effects, or multiple focal points."}, "neon-cyber": {"prompt": "[STYLE SPEC]\nUse deep navy with cyan as the functional signal and magenta as a rare secondary event; keep typography crisp and futuristic.\n\n[LAYOUT RULES]\nBuild on a faint technical grid, use particles only for depth, and connect claims through clean routes, nodes, and status markers.\n\n[FORBIDDEN]\nNo illegible glow, Matrix rain, gratuitous particles, neon on every element, or fake terminal content."}, "notebook-tabs": {"prompt": "[STYLE SPEC]\nSet a cream paper page on charcoal with elegant editorial headings and muted pastel index tabs.\n\n[LAYOUT RULES]\nUse tabs as section navigation, a consistent paper frame, subtle binder details, and generous lesson-content margins.\n\n[FORBIDDEN]\nNo photoreal stationery, excessive shadows, tiny vertical labels, random tab colors, or overcrowded notes."}, "paper-and-ink": {"prompt": "[STYLE SPEC]\nUse warm cream, charcoal, and a restrained crimson with literary serif typography and fine ink-like rules.\n\n[LAYOUT RULES]\nOpen sections with a drop cap or pull quote, preserve book-like margins, and use horizontal rules to separate evidence and commentary.\n\n[FORBIDDEN]\nNo parchment textures, quill imagery, ornate borders, dense manuscript pages, or crimson used as a background fill."}, "pastel-geometry": {"prompt": "[STYLE SPEC]\nUse a soft blue field, warm-white card, disciplined pastel pills, and friendly geometric sans type.\n\n[LAYOUT RULES]\nAnchor content inside one rounded frame; use five consistent edge pills as rhythm and keep diagrams simple and labeled.\n\n[FORBIDDEN]\nNo candy-color overload, nested cards, childish icons, weak contrast, or arbitrary pill dimensions."}, "poly-cube": {"prompt": "[STYLE SPEC]\nUse faceted low-poly 3D geometry \u2014 rotating-cube logic in primary red, green, and blue \u2014 on white with bold black type.\n\n[LAYOUT RULES]\nTreat the cube or polygon cluster as a single 3x3 structural grid anchor; keep supporting text minimal and high-contrast.\n\n[FORBIDDEN]\nNo pastel recoloring, more than three primary accents at once, busy backgrounds, or crowded polygon fields."}, "premium-mockup": {"prompt": "[STYLE SPEC]\nUse a clean studio system with white, pale gray, and black stages plus restrained electric-purple and acid-yellow actions.\n\n[LAYOUT RULES]\nMake the product screen occupy 70\u201380% of the canvas; use soft grounded shadows, precise UI spacing, cropped scale, and short spec labels.\n\n[FORBIDDEN]\nNo unlicensed brand-device replicas, pixelated screens, excessive gloss, floating UI clutter, or more than two accents."}, "raw-mono": {"prompt": "[STYLE SPEC]\nUse raw system-default UI energy: giant monospace type, unstyled rectangles, and pasted-in imagery with visible CSS-frame lines.\n\n[LAYOUT RULES]\nKeep a strict title/body split, let monospace numerals carry data, and use pure blue or red only as a single warning-level accent.\n\n[FORBIDDEN]\nNo rounded corners, gradients, decorative icons, soft shadows, or more than one accent color."}, "riso-print": {"prompt": "[STYLE SPEC]\nUse cream paper with ink-blue text, flat gold and red risograph-style misregistration, and rough newsprint texture.\n\n[LAYOUT RULES]\nLet bold sans or handwritten headlines bleed slightly off-register; keep ink-bleed texture as atmosphere, not decoration.\n\n[FORBIDDEN]\nNo digital-clean gradients, glossy finishes, more than three riso colors per slide, or perfectly aligned registration."}, "soft-relief": {"prompt": "[STYLE SPEC]\nUse an off-white canvas with soft embossed UI elements \u2014 light-highlight and shadow pairs that read as gently raised or pressed.\n\n[LAYOUT RULES]\nTreat every content block as a rounded relief card; keep contrast low but text legible, and never let more than one element look \"pressed in\" at once.\n\n[FORBIDDEN]\nNo harsh drop shadows, saturated colors, sharp corners, or more than two relief depths per slide."}, "split-pastel": {"prompt": "[STYLE SPEC]\nDivide the canvas between peach and lavender, using dark type and a few mint or yellow badges.\n\n[LAYOUT RULES]\nKeep a stable vertical split, use the right-side grid only as subtle structure, and place one clear action or takeaway per slide.\n\n[FORBIDDEN]\nNo pastel rainbow, noisy patterns, pill swarms, low-contrast copy, or symmetrical default composition."}, "swiss-modern": {"prompt": "[STYLE SPEC]\nUse pure white, black, and one signal red with a visible Bauhaus-informed grid and strong sans hierarchy.\n\n[LAYOUT RULES]\nAlign asymmetrically, expose the grid through rules and geometry, and make one typographic or data statement dominant.\n\n[FORBIDDEN]\nNo centered hero defaults, rounded UI components, gradients, decorative photos, or more than one accent color."}, "terminal-green": {"prompt": "[STYLE SPEC]\nUse GitHub-dark black, terminal green, and monospace typography as a focused developer interface.\n\n[LAYOUT RULES]\nStructure slides like concise command sessions with clear prompts, syntax emphasis, scan-line restraint, and one blinking-cursor motif.\n\n[FORBIDDEN]\nNo fake hacking clich\u00e9s, long code dumps, bright secondary colors, low-resolution CRT noise, or decorative command output."}, "varsity": {"prompt": "[STYLE SPEC]\nUse collegiate block type, warm athletic colors, stitched-line accents, and bold score-card numerals.\n\n[LAYOUT RULES]\nBuild diagonal momentum with large numbers, team-color bands, roster grids, and one rallying phrase per slide.\n\n[FORBIDDEN]\nNo trademarked team marks, mascot clip art, distressed texture overload, weak contrast, or cramped copy."}, "vintage-editorial": {"prompt": "[STYLE SPEC]\nUse warm cream, black, muted beige, expressive serif headlines, and clean sans body copy.\n\n[LAYOUT RULES]\nCenter the principal editorial claim, counterbalance it with one geometric line-circle motif, and frame calls to action with simple borders.\n\n[FORBIDDEN]\nNo literal vintage illustrations, sepia filters, ornate frames, shadow-heavy cards, or generic motivational copy."}, "warning-grid": {"prompt": "[STYLE SPEC]\nUse cyber-yellow and black with cyan accents, stencil or angular sans headlines, and hazard-label design language.\n\n[LAYOUT RULES]\nUse warning-stripe bands, barcode-style metadata, and one glitch accent \u2014 never let stripes overwhelm the message.\n\n[FORBIDDEN]\nNo literal barcodes without meaning, excessive glitch noise, soft rounded type, or pastel softening."}};
+const grid = document.getElementById('grid');
+const countEl = document.getElementById('count');
+function updateCount() {
+  const visible = [...grid.children].filter(c => c.style.display !== 'none').length;
+  countEl.textContent = visible + ' / 37';
+}
+document.getElementById('filters').addEventListener('click', (e) => {
+  const btn = e.target.closest('.chip');
+  if (!btn) return;
+  document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', 'false'));
+  btn.setAttribute('aria-pressed', 'true');
+  const tag = btn.dataset.tag;
+  [...grid.children].forEach(card => {
+    const tags = card.dataset.tags.split(',');
+    card.style.display = (tag === 'all' || tags.includes(tag)) ? '' : 'none';
+  });
+  updateCount();
+});
+grid.addEventListener('click', (e) => {
+  const btn = e.target.closest('.copy');
+  if (!btn) return;
+  const text = DATA[btn.dataset.slug].prompt;
+  navigator.clipboard.writeText(text).then(() => {
+    const old = btn.textContent;
+    btn.textContent = 'copied';
+    setTimeout(() => btn.textContent = old, 1200);
+  });
+});
+updateCount();
+</script>
+</body>
+</html>
