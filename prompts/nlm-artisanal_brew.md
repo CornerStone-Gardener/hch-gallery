@@ -1,0 +1,60 @@
+---
+name: "Artisanal Brew"
+tags: [consulting-exec, corporate, data-dense]
+use_case: "Executive & board decks"
+palette: "#3E4E36 / #D4E157 / #FFFFFF / #1B2418"
+fonts: []
+source_url: https://github.com/YamilAyma/notebooklm-prompt-styles/tree/main
+license: MIT
+attribution: "Harvested verbatim from YamilAyma/notebooklm-prompt-styles (Business & Executive)"
+renderer: notebooklm
+---
+## [STYLE SPEC]
+Artisanal Brew. Organic luxury design with olive/lime tones and botanical illustrations. Typography — Heading: Heading Now, bold · Body: TT Firs Neue, regular.
+## [LAYOUT RULES]
+Paste the full YAML design_system into NotebookLM Slides custom instructions verbatim. Keep the palette (#3E4E36, #D4E157, #FFFFFF, #1B2418) and typography identical on every slide; add only title, audience, and emphasis.
+## [FORBIDDEN]
+Do not change the specified palette or typography, invent data, or exaggerate. No off-brand decoration.
+## [FULL PROMPT — verbatim]
+```yaml
+# Source: YamilAyma/notebooklm-prompt-styles (GitHub)
+description: "A sophisticated and organic aesthetic designed for premium tea brands, artisanal food experiences, and organic product showcases. It features the powerful Heading Now typeface for titles to convey elegance, paired with the technical clarity of TT Firs Neue. Characterized by a palette of olive green, soft lime, and deep forest black, it utilizes hand-drawn leaf illustrations, organic curved photo containers, and pill-shaped UI elements to create a grounded and premium visual experience."
+design_system:
+  global_style:
+    theme: "Artisanal Brew. Organic luxury design with olive/lime tones and botanical illustrations."
+    typography: 
+      primary_heading: "Heading Now, bold"
+      secondary_heading: "TT Firs Neue, bold"
+      body_text: "TT Firs Neue, regular"
+    color_palette:
+      primary: "#3E4E36" # Olive Green
+      secondary: "#D4E157" # Soft Lime Green
+      background: "#FFFFFF" # Pure White
+      surface: "#1B2418" # Dark Forest Black
+      text_main: "#1B2418" # Dark Green Text
+      text_secondary: "#558B2F" # Muted Olive
+    key_visual_elements: 
+      - "Delicate hand-drawn leaf and botanical illustrations as decorative overlays"
+      - "Fluid, organic curved containers for photography and background shapes"
+      - "Pill-shaped buttons and labels with minimalist functional icons"
+      - "Dark forest green horizontal bands for strong content separation"
+      - "Warm, earthy photography of tea ceremonies and natural textures"
+
+  image_generation_prompts:
+    style_guidelines: "Close up of tea being poured into a ceramic cup, steam rising, organic textures, olive and lime green color palette, hand-drawn leaf overlays, soft natural light, Heading Now font vibe."
+    themes:
+      - target: "Tea Ceremony"
+        prompt_elements: "Traditional tea preparation with a ceramic teapot, soft shadows, olive green atmosphere, organic and calm, high-end food photography."
+      - target: "Organic Plantation"
+        prompt_elements: "Aerial view of lush green tea fields with morning mist, soft lime green highlights, peaceful and artisanal, 8k resolution."
+
+slide_layout_templates:
+  - type: "Artisanal_Hero_Experience"
+    usage: "Large photo on the right with a curved edge and a bold dark green Heading Now title on the left"
+  - type: "Product_Problem_Organic"
+    usage: "Split layout with botanical illustrations and a dark green text band for emphasis"
+  - type: "Key_Features_Lime"
+    usage: "Three column layout on a lime surface with dark forest green headings and leaf icons"
+  - type: "Thank_You_Artisanal"
+    usage: "Contact details in a pill-shaped dark green box on a background with leaf illustrations"
+```

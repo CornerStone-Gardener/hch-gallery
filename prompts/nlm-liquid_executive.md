@@ -1,0 +1,59 @@
+---
+name: "Liquid Executive"
+tags: [consulting-exec, corporate, data-dense]
+use_case: "Executive & board decks"
+palette: "#0056B3 / #000000 / #111111 / #FFFFFF"
+fonts: []
+source_url: https://github.com/YamilAyma/notebooklm-prompt-styles/tree/main
+license: MIT
+attribution: "Harvested verbatim from YamilAyma/notebooklm-prompt-styles (Business & Executive)"
+renderer: notebooklm
+---
+## [STYLE SPEC]
+Liquid Executive. Professional corporate style with fluid blue textures and rounded layouts. Typography — Heading: Garet, sans-serif · Body: Open Sauce Sans, light.
+## [LAYOUT RULES]
+Paste the full YAML design_system into NotebookLM Slides custom instructions verbatim. Keep the palette (#0056B3, #000000, #111111, #FFFFFF) and typography identical on every slide; add only title, audience, and emphasis.
+## [FORBIDDEN]
+Do not change the specified palette or typography, invent data, or exaggerate. No off-brand decoration.
+## [FULL PROMPT — verbatim]
+```yaml
+# Source: YamilAyma/notebooklm-prompt-styles (GitHub)
+description: "A premium executive aesthetic characterized by flowing blue liquid and smoke textures on a solid black background. It features the elegant Garet typeface and ultra-rounded content containers. Ideal for high-stakes business presentations, corporate reports, and executive portfolios."
+design_system:
+  global_style:
+    theme: "Liquid Executive. Professional corporate style with fluid blue textures and rounded layouts."
+    typography: 
+      primary_heading: "Garet, sans-serif"
+      secondary_heading: "Garet, medium"
+      body_text: "Open Sauce Sans, light"
+    color_palette:
+      primary: "#0056B3" # Executive Blue
+      background: "#000000" # Pure Black
+      surface: "#111111" # Dark Surface
+      accent_gradient: "Flowing blue smoke texture with electric highlights"
+      text_main: "#FFFFFF"
+      text_secondary: "#CCCCCC"
+    key_visual_elements: 
+      - "Flowing blue liquid silk or smoke background patterns"
+      - "Ultra-rounded corners for cards and images (24px+)"
+      - "Thin white or light blue card outlines"
+      - "Clean, high-contrast typography with generous leading"
+
+  image_generation_prompts:
+    style_guidelines: "Executive corporate style, flowing blue silk textures, deep black backgrounds, professional studio lighting, high-end business photography, sharp focus, Garet font vibe."
+    themes:
+      - target: "Corporate Flow"
+        prompt_elements: "Abstract flowing blue smoke or liquid silk on a solid black background, elegant curves, high contrast."
+      - target: "Modern Executive"
+        prompt_elements: "Minimalist office interior with deep blue accents, professional lighting, clean and sophisticated."
+
+slide_layout_templates:
+  - type: "Executive_Hero"
+    usage: "Large title over a dark background with a dramatic blue liquid wave on the right"
+  - type: "Mission_Rounded"
+    usage: "Mission and Vision points inside ultra-rounded blue cards with white text"
+  - type: "Market_Analysis_Dark"
+    usage: "Charts and data visualization with blue bar accents on a black background"
+  - type: "Liquid_Contact"
+    usage: "Clean contact info inside a rounded dark blue container with minimalist icons"
+```

@@ -1,0 +1,57 @@
+---
+name: "Modern Harvest"
+tags: [nature, wellness, soft]
+use_case: "Wellness & lifestyle decks"
+palette: "#8D201A / #4E342E / #FFFFFF / #F5F5F5"
+fonts: []
+source_url: https://github.com/YamilAyma/notebooklm-prompt-styles/tree/main
+license: MIT
+attribution: "Harvested verbatim from YamilAyma/notebooklm-prompt-styles (Nature & Wellness)"
+renderer: notebooklm
+---
+## [STYLE SPEC]
+Modern Harvest. Sophisticated and high-tech agricultural design for modern rural solutions. Typography — Heading: Garet, sans-serif · Body: Garet, regular.
+## [LAYOUT RULES]
+Paste the full YAML design_system into NotebookLM Slides custom instructions verbatim. Keep the palette (#8D201A, #4E342E, #FFFFFF, #F5F5F5) and typography identical on every slide; add only title, audience, and emphasis.
+## [FORBIDDEN]
+Do not change the specified palette or typography, invent data, or exaggerate. No off-brand decoration.
+## [FULL PROMPT — verbatim]
+```yaml
+# Source: YamilAyma/notebooklm-prompt-styles (GitHub)
+description: "A premium and innovation-focused aesthetic for modern agriculture. It uses the friendly and geometric Garet typeface to present data-driven solutions. Characterized by a clean white background with sophisticated terracotta and deep earth tones, it features ultra-rounded image containers and high-end rural photography to create a trustworthy, high-tech farming atmosphere."
+design_system:
+  global_style:
+    theme: "Modern Harvest. Sophisticated and high-tech agricultural design for modern rural solutions."
+    typography: 
+      primary_heading: "Garet, sans-serif"
+      secondary_heading: "Garet, medium"
+      body_text: "Garet, regular"
+    color_palette:
+      primary: "#8D201A" # Terracotta Red
+      secondary: "#4E342E" # Earth Brown
+      background: "#FFFFFF" # Pure White
+      surface: "#F5F5F5" # Light Gray Surface
+      text_main: "#4E342E"
+      text_secondary: "#8D201A"
+    key_visual_elements: 
+      - "Ultra-rounded (pill-shaped) image containers and buttons"
+      - "Sunset-lit agricultural photography (hay bales, silos, tractors)"
+      - "Clean, thin lines to separate sections and data points"
+      - "Minimalist iconography for tech-driven farming features"
+
+  image_generation_prompts:
+    style_guidelines: "High-end agricultural photography, sunset lighting, terracotta and earth brown accents, ultra-rounded corners, clean and professional pitch deck style, Garet font aesthetic."
+    themes:
+      - target: "Data Solutions"
+        prompt_elements: "A modern grain silo under a warm sunset, terracotta graphic lines, high-tech and premium rural vibe."
+      - target: "Harvest Efficiency"
+        prompt_elements: "Large hay bales in a golden field, ultra-rounded frame, earth tones, sophisticated agricultural look."
+
+slide_layout_templates:
+  - type: "Harvest_Premium_Cover"
+    usage: "Large Garet headline on the left with a vertically-oriented pill-shaped photo on the right"
+  - type: "Earth_Tone_Roadmap"
+    usage: "A clean horizontal timeline with terracotta markers and soil brown labels"
+  - type: "Pill_Image_Gallery"
+    usage: "A grid of images where each one is enclosed in a pill-shaped container"
+```
